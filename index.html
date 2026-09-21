@@ -1,0 +1,3000 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>ReLoop - Sampah Hari Ini, Masa Depan Esok</title>
+
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Leaflet (peta interaktif berbasis OpenStreetMap, gratis & tanpa API key) -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+    />
+  </head>
+
+  <body>
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <header class="navbar">
+      <div
+        class="logo-area"
+        id="logoArea"
+        role="button"
+        tabindex="0"
+        title="Lihat profil ReLoop"
+        onclick="openReloopProfile()"
+      >
+        <div class="logo-circle">
+          <img
+            src="Reloop.jpeg"
+            alt="Logo ReLoop"
+            class="logo-image"
+            onerror="
+              this.remove();
+              this.parentNode.textContent = 'R';
+            "
+          />
+        </div>
+
+        <div>
+          <h2>ReLoop</h2>
+          <span>Less Waste, More Life</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-button active" data-page="home">Home</button>
+
+        <button class="nav-button" data-page="pengelola">Pengelola</button>
+
+        <button class="nav-button" data-page="jemput">Jemput Sampah</button>
+
+        <button class="nav-button" data-page="edukasi">Edukasi</button>
+
+        <button class="nav-button" data-page="pembelian">Pembelian</button>
+
+        <button class="nav-button" data-page="produk">Produk</button>
+
+        <button class="nav-button" data-page="dashboard">Dashboard</button>
+
+        <button
+          class="nav-button"
+          id="navPortalBtn"
+          data-page="portal-pengelola"
+          style="display: none"
+        >
+          Portal Pengelola
+        </button>
+
+        <button class="nav-button" data-page="pengaturan">Pengaturan</button>
+      </nav>
+
+      <button class="profile-button" onclick="handleProfileClick()">
+        <div class="profile-icon" id="profileIcon">P</div>
+      </button>
+    </header>
+
+    <!-- =====================================================
+         HOME
+    ====================================================== -->
+
+    <main id="home" class="page active-page">
+      <section class="hero">
+        <div class="hero-content">
+          <p class="small-title">RELOOP</p>
+
+          <h1>
+            Sampah Hari Ini,<br />
+            Masa Depan Esok
+          </h1>
+
+          <p>
+            Temukan pengelola sampah terdekat, pilih dengan tepat, dan jadikan
+            sampah sebagai sumber daya.
+          </p>
+
+          <p>
+            Bersama kita wujudkan lingkungan yang lebih bersih dan ekonomi
+            sirkular yang berkelanjutan.
+          </p>
+
+          <button class="location-button" onclick="showPage('pengelola')">
+            <div>
+              <strong>Temukan Pengelola Sampah</strong>
+              <small>
+                Gunakan lokasi Anda untuk mencari pengelola terdekat
+              </small>
+            </div>
+
+            <span>→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- MENU CEPAT -->
+
+      <section class="quick-menu">
+        <button onclick="showPage('pengelola')">
+          <div class="menu-image">
+            <img src="pengelolaa.jpg" alt="Pengelola" />
+          </div>
+
+          <h3>Pengelola</h3>
+
+          <p>Temukan bank sampah dan pengelola terdekat</p>
+        </button>
+
+        <button onclick="showPage('edukasi')">
+          <div class="menu-image">
+            <img src="edukasi.jpg" alt="Edukasi" />
+          </div>
+
+          <h3>Edukasi</h3>
+
+          <p>Pelajari cara mengelola sampah secara mandiri</p>
+        </button>
+
+        <button onclick="showPage('pembelian')">
+          <div class="menu-image">
+            <img src="pembelian.jpg" alt="Pembelian" />
+          </div>
+
+          <h3>Pembelian</h3>
+
+          <p>Dukung produk hasil daur ulang</p>
+        </button>
+
+        <button onclick="showPage('produk')">
+          <div class="menu-image">
+            <img src="prod.jpg" alt="Produk" />
+          </div>
+
+          <h3>Produk</h3>
+
+          <p>Lihat hasil olahan dari sampah</p>
+        </button>
+      </section>
+
+      <!-- PENGELOLA TERDEKAT -->
+
+      <section class="home-section">
+        <div class="section-title">
+          <div>
+            <h2>Pengelola Sampah Terdekat</h2>
+
+            <p>Temukan bank sampah sesuai jenis sampah Anda.</p>
+          </div>
+
+          <button onclick="showPage('pengelola')">Lihat Semua →</button>
+        </div>
+
+        <div class="home-manager-layout">
+          <div class="map-preview">
+            <div id="homeMap" class="fake-map"></div>
+          </div>
+
+          <div class="manager-card">
+            <img src="bank sampah malang.webp" alt="Bank Sampah Malang" />
+
+            <div>
+              <h3>Bank Sampah Malang</h3>
+
+              <p>Jl. S. Supriadi No.38 A, Sukun, Kota Malang</p>
+
+              <p class="rating">★ 4.6 (41 ulasan Google)</p>
+
+              <div class="tags">
+                <span>Plastik</span>
+                <span>Kertas</span>
+                <span>Logam</span>
+                <span>Kaca</span>
+                <span class="tag-general">Anorganik (Umum)</span>
+              </div>
+
+              <button onclick="showPage('pengelola')" class="primary-button">
+                Lihat Detail
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PILIH SAMPAH -->
+
+      <section class="home-section">
+        <div class="section-title">
+          <div>
+            <h2>Pilih Jenis Sampah</h2>
+
+            <p>
+              Cari pengelola berdasarkan jenis sampah. Plastik, Kertas, Logam,
+              Kaca, dan Elektronik otomatis dikenali sistem sebagai sampah
+              <strong>anorganik</strong>, sehingga hasil pencarian juga
+              menampilkan Bank Sampah sebagai pengelola umum anorganik.
+            </p>
+          </div>
+        </div>
+
+        <div class="waste-grid">
+          <button onclick="selectWaste('Plastik')">Plastik</button>
+
+          <button onclick="selectWaste('Kertas')">Kertas</button>
+
+          <button onclick="selectWaste('Logam')">Logam</button>
+
+          <button onclick="selectWaste('Kaca')">Kaca</button>
+
+          <button onclick="selectWaste('Organik')">Organik</button>
+
+          <button onclick="selectWaste('Elektronik')">Elektronik</button>
+
+          <button onclick="selectWaste('Bioplastik')">Bioplastik</button>
+
+          <button onclick="selectWaste('Lainnya')">Lainnya</button>
+        </div>
+      </section>
+
+      <!-- KENAPA PENTING -->
+
+      <section class="importance">
+        <div>
+          <h2>Kenapa Pengelolaan Sampah Penting?</h2>
+
+          <p>
+            Dengan pengelolaan sampah yang tepat, kita bisa mengurangi
+            pencemaran, memperpanjang siklus hidup produk, dan menjaga
+            lingkungan.
+          </p>
+
+          <button onclick="showPage('edukasi')">Pelajari Lebih Lanjut →</button>
+        </div>
+
+        <div class="importance-list">
+          <div>
+            <strong>Mengurangi</strong>
+            <span>Sampah lingkungan</span>
+          </div>
+
+          <div>
+            <strong>Mendaur Ulang</strong>
+            <span>Material yang masih bernilai</span>
+          </div>
+
+          <div>
+            <strong>Mengurangi</strong>
+            <span>Emisi dan pencemaran</span>
+          </div>
+
+          <div>
+            <strong>Menjaga</strong>
+            <span>Ekosistem</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUK HOME -->
+
+      <section class="home-section">
+        <div class="section-title">
+          <div>
+            <h2>Produk Unggulan</h2>
+
+            <p>Dari sampah menjadi produk bernilai.</p>
+          </div>
+
+          <button onclick="showPage('pembelian')">Lihat Semua Produk →</button>
+        </div>
+
+        <div class="product-grid">
+          <div class="product-card">
+            <img src="tas_daur_ulang.png" alt="Tas Daur Ulang" />
+
+            <h3>Tas Daur Ulang Plastik</h3>
+
+            <p>Rp 75.000</p>
+          </div>
+
+          <div class="product-card">
+            <img src="pot_tanaman.jpg" alt="Pot Tanaman" />
+
+            <h3>Pot Tanaman Daur Ulang</h3>
+
+            <p>Rp 45.000</p>
+          </div>
+
+          <div class="product-card">
+            <img src="kompos_sampah.jpg" alt="Pupuk Kompos" />
+
+            <h3>Pupuk Kompos Organik</h3>
+
+            <p>Rp 30.000</p>
+          </div>
+
+          <div class="product-card">
+            <img src="buku_daur_ulang.jpg" alt="Buku Daur Ulang" />
+
+            <h3>Buku Catatan Daur Ulang</h3>
+
+            <p>Rp 35.000</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         PENGELOLA
+    ====================================================== -->
+
+    <main id="pengelola" class="page">
+      <section
+        class="page-hero"
+        style="background-image: url(&quot;images/background1.png&quot;)"
+      >
+        <div>
+          <h1>Pengelola Sampah</h1>
+
+          <p>
+            Temukan bank sampah dan pusat pengelolaan sesuai dengan jenis sampah
+            Anda.
+          </p>
+        </div>
+      </section>
+
+      <section class="manager-page">
+        <aside class="filter-sidebar">
+          <h2>Kategori Sampah</h2>
+
+          <p>Pilih jenis sampah yang ingin Anda cari pengelolanya.</p>
+
+          <p class="category-hint">
+            Bank sampah umumnya menerima seluruh jenis limbah
+            <strong>anorganik</strong> (plastik, kertas, logam, kaca, dan
+            elektronik) dalam satu tempat yang sama. Sistem otomatis
+            mengelompokkan kelima jenis ini sebagai sampah anorganik, jadi saat
+            Anda memilih salah satunya, pengelola umum anorganik (Bank Sampah)
+            ikut ditampilkan sebagai salah satu hasilnya.
+          </p>
+
+          <input
+            type="text"
+            id="wasteSearch"
+            placeholder="Cari jenis sampah..."
+          />
+
+          <div class="category-list">
+            <button onclick="filterManager('Semua')">Semua Sampah</button>
+
+            <button onclick="filterManager('Plastik')">Plastik</button>
+
+            <button onclick="filterManager('Kertas')">Kertas</button>
+
+            <button onclick="filterManager('Logam')">Logam</button>
+
+            <button onclick="filterManager('Kaca')">Kaca</button>
+
+            <button onclick="filterManager('Organik')">Organik</button>
+
+            <button onclick="filterManager('Elektronik')">Elektronik</button>
+
+            <button onclick="filterManager('Bioplastik')">Bioplastik</button>
+          </div>
+
+          <div class="location-box">
+            <h3>Lokasi Anda</h3>
+
+            <p id="locationText">Malang, Jawa Timur</p>
+
+            <button onclick="getUserLocation()">Gunakan Lokasi Saya</button>
+          </div>
+
+          <button
+            id="openRegisterBtn"
+            class="register-manager-button"
+            onclick="openRegisterModal()"
+          >
+            + Daftar sebagai Pengelola
+          </button>
+
+          <button
+            id="openProductBtn"
+            class="add-product-button"
+            style="display: none"
+            onclick="openProductModal()"
+          >
+            + Tambahkan Produk Baru
+          </button>
+
+          <p id="productLockedNote" class="locked-feature-note">
+            Fitur tambah produk khusus untuk <strong>akun Pengelola</strong>.
+            <button
+              type="button"
+              class="link-button"
+              onclick="showPage('login')"
+            >
+              Masuk
+            </button>
+            atau
+            <button
+              type="button"
+              class="link-button"
+              onclick="showPage('signup')"
+            >
+              daftar sebagai Pengelola
+            </button>
+            untuk membukanya.
+          </p>
+        </aside>
+
+        <div class="manager-content">
+          <!-- GOOGLE MAP / PETA INTERAKTIF -->
+
+          <div class="google-map-container">
+            <div id="pengelolaMap" class="map-placeholder"></div>
+          </div>
+
+          <div class="map-legend">
+            <span
+              ><i class="legend-dot legend-dot--manual"></i> Terdaftar di
+              ReLoop</span
+            >
+            <span
+              ><i class="legend-dot legend-dot--google"></i> Data dari Google
+              Maps</span
+            >
+          </div>
+
+          <!-- HASIL PENCARIAN -->
+
+          <div class="search-result-header">
+            <div>
+              <h2>Hasil Pencarian</h2>
+
+              <p>Menampilkan bank sampah terdekat dari lokasi Anda.</p>
+            </div>
+
+            <select id="sortManager">
+              <option value="distance">Terdekat</option>
+
+              <option value="rating">Rating Tertinggi</option>
+            </select>
+          </div>
+
+          <div id="managerList">
+            <!-- Data lokasi di bawah ini diambil dari Google Maps (pencarian
+                 "bank sampah Malang", "TPS 3R Kota Malang", "TPA Supit Urang
+                 Malang", dan "pusat daur ulang sampah Malang"). Kategori
+                 sampah yang diterima merupakan perkiraan berdasarkan jenis
+                 fasilitas, karena Google Maps tidak mencantumkan rincian
+                 tersebut secara resmi. -->
+
+            <!-- MANAGER 1 -->
+
+            <article
+              class="manager-result"
+              data-category="Plastik,Kertas,Logam,Kaca,Anorganik"
+              data-lat="-7.995456"
+              data-lng="112.619461"
+              data-source="google"
+            >
+              <img src="bank sampah malang.webp" alt="Bank Sampah Malang" />
+
+              <div class="manager-info">
+                <span class="distance"> 3,5 km </span>
+
+                <h3>
+                  Bank Sampah Malang
+                  <span class="new-badge new-badge--google">Google Maps</span>
+                </h3>
+
+                <p>Sumber: Google Maps</p>
+
+                <p class="rating">★ 4.6 (41 ulasan)</p>
+
+                <p>
+                  Jl. S. Supriadi No.38 A, Sukun, Kota Malang, Jawa Timur 65147
+                </p>
+              </div>
+
+              <div class="manager-services">
+                <div class="tags">
+                  <span>Plastik</span>
+                  <span>Kertas</span>
+                  <span>Logam</span>
+                  <span>Kaca</span>
+                  <span class="tag-general">Anorganik (Umum)</span>
+                </div>
+
+                <p>
+                  Buka: Senin-Kamis & Sabtu 08.00-16.00, Jumat 08.00-11.00 &
+                  13.00-16.00 WIB, Minggu Tutup
+                </p>
+              </div>
+
+              <div class="manager-actions">
+                <button
+                  class="primary-button"
+                  onclick="
+                    contactManager('Bank Sampah Malang', '+62 341 341618')
+                  "
+                >
+                  Hubungi
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="
+                    window.open(
+                      'https://maps.app.goo.gl/ebBjXDdEjHUi3CaPA',
+                      '_blank',
+                    )
+                  "
+                >
+                  Lihat di Google Maps
+                </button>
+
+                <button class="secondary-button" onclick="">
+                  Lihat Detail →
+                </button>
+              </div>
+            </article>
+
+            <!-- MANAGER 2 -->
+
+            <article
+              class="manager-result"
+              data-category="Organik,Plastik,Kertas"
+              data-lat="-7.9986344"
+              data-lng="112.6053124"
+              data-source="google"
+            >
+              <img src="tps3r basama.webp" alt="TPS3R BASAMA Bandungrejosari" />
+
+              <div class="manager-info">
+                <span class="distance"> 4,6 km </span>
+
+                <h3>
+                  TPS3R BASAMA Bandungrejosari
+                  <span class="new-badge new-badge--google">Google Maps</span>
+                </h3>
+
+                <p>Sumber: Google Maps</p>
+
+                <p class="rating">★ 5.0 (2 ulasan)</p>
+
+                <p>
+                  Gg. Dr. Soetomo, Bandungrejosari, Sukun, Kota Malang, Jawa
+                  Timur 65148
+                </p>
+              </div>
+
+              <div class="manager-services">
+                <div class="tags">
+                  <span>Organik</span>
+                  <span>Plastik</span>
+                  <span>Kertas</span>
+                </div>
+
+                <p>Buka: Senin-Sabtu 07.00-15.00 WIB, Minggu Tutup</p>
+              </div>
+
+              <div class="manager-actions">
+                <button
+                  class="primary-button"
+                  onclick="
+                    window.open(
+                      'https://maps.app.goo.gl/FnKDir8TUFhwh3Lr7',
+                      '_blank',
+                    )
+                  "
+                >
+                  Buka di Google Maps
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="showManagerDetail('TPS3R BASAMA Bandungrejosari')"
+                >
+                  Lihat Detail →
+                </button>
+              </div>
+            </article>
+
+            <!-- MANAGER 3 -->
+
+            <article
+              class="manager-result"
+              data-category="Organik,Plastik,Kertas"
+              data-lat="-8.0161654"
+              data-lng="112.6448084"
+              data-source="google"
+            >
+              <img src="tps3r buring.webp" alt="TPS3R Kelurahan Buring" />
+
+              <div class="manager-info">
+                <span class="distance"> 5,6 km </span>
+
+                <h3>
+                  TPS3R Kelurahan Buring
+                  <span class="new-badge new-badge--google">Google Maps</span>
+                </h3>
+
+                <p>Sumber: Google Maps</p>
+
+                <p class="rating">★ 5.0 (2 ulasan)</p>
+
+                <p>Buring, Kedungkandang, Kota Malang, Jawa Timur 65135</p>
+              </div>
+
+              <div class="manager-services">
+                <div class="tags">
+                  <span>Organik</span>
+                  <span>Plastik</span>
+                  <span>Kertas</span>
+                </div>
+
+                <p>
+                  Buka: 24 Jam (menurut beberapa ulasan, gerbang kadang tertutup
+                  di luar jam kerja)
+                </p>
+              </div>
+
+              <div class="manager-actions">
+                <button
+                  class="primary-button"
+                  onclick="
+                    window.open(
+                      'https://maps.app.goo.gl/eVcA5tyoYAoXeebz6',
+                      '_blank',
+                    )
+                  "
+                >
+                  Buka di Google Maps
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="showManagerDetail('TPS3R Kelurahan Buring')"
+                >
+                  Lihat Detail →
+                </button>
+              </div>
+            </article>
+
+            <!-- MANAGER 4 -->
+
+            <article
+              class="manager-result"
+              data-category="Organik,Plastik,Kertas,Logam"
+              data-lat="-7.9213785"
+              data-lng="112.5834081"
+              data-source="google"
+            >
+              <img
+                src="tpst 3r mulyoangung.jpg"
+                alt="TPST 3R Mulyoagung Bersatu"
+              />
+
+              <div class="manager-info">
+                <span class="distance"> 7,4 km </span>
+
+                <h3>
+                  TPST 3R Mulyoagung Bersatu
+                  <span class="new-badge new-badge--google">Google Maps</span>
+                </h3>
+
+                <p>Sumber: Google Maps</p>
+
+                <p class="rating">★ 4.4 (87 ulasan)</p>
+
+                <p>
+                  Jl. TPST No.01, Jetak Lor, Mulyoagung, Kec. Dau, Kabupaten
+                  Malang, Jawa Timur 65151
+                </p>
+              </div>
+
+              <div class="manager-services">
+                <div class="tags">
+                  <span>Organik</span>
+                  <span>Plastik</span>
+                  <span>Kertas</span>
+                  <span>Logam</span>
+                </div>
+
+                <p>Buka: Senin-Sabtu 06.30-17.00 WIB, Minggu Tutup</p>
+              </div>
+
+              <div class="manager-actions">
+                <button
+                  class="primary-button"
+                  onclick="
+                    contactManager(
+                      'TPST 3R Mulyoagung Bersatu',
+                      '+62 813-3555-5131',
+                    )
+                  "
+                >
+                  Hubungi
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="
+                    viewOnGoogleMaps(
+                      -7.9213785,
+                      112.5834081,
+                      'https://maps.app.goo.gl/a2358esmrJPq8Nmc9',
+                    )
+                  "
+                >
+                  Lihat di Google Maps
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="showManagerDetail('TPST 3R Mulyoagung Bersatu')"
+                >
+                  Lihat Detail →
+                </button>
+              </div>
+            </article>
+
+            <!-- MANAGER 5 -->
+
+            <article
+              class="manager-result"
+              data-category="Organik,Lainnya"
+              data-lat="-7.9827377"
+              data-lng="112.5779182"
+              data-source="google"
+            >
+              <img src="tpa.webp" alt="TPA Supit Urang" />
+
+              <div class="manager-info">
+                <span class="distance"> 6,3 km </span>
+
+                <h3>
+                  TPA Supit Urang
+                  <span class="new-badge new-badge--google">Google Maps</span>
+                </h3>
+
+                <p>Sumber: Google Maps</p>
+
+                <p class="rating">★ 4.3 (52 ulasan)</p>
+
+                <p>
+                  Pandan Selatan, Pandanlandung, Kec. Wagir, Kabupaten Malang,
+                  Jawa Timur 65158
+                </p>
+              </div>
+
+              <div class="manager-services">
+                <div class="tags">
+                  <span>Organik</span>
+                  <span>Lainnya</span>
+                </div>
+
+                <p>Buka: 24 Jam (Tempat Pemrosesan Akhir/TPA milik kota)</p>
+              </div>
+
+              <div class="manager-actions">
+                <button
+                  class="primary-button"
+                  onclick="
+                    window.open(
+                      'https://maps.app.goo.gl/VJa9T9zFQz6RcvYy8',
+                      '_blank',
+                    )
+                  "
+                >
+                  Buka di Google Maps
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="showManagerDetail('TPA Supit Urang')"
+                >
+                  Lihat Detail →
+                </button>
+              </div>
+            </article>
+
+            <!-- MANAGER 6 -->
+
+            <article
+              class="manager-result"
+              data-category="Plastik,Kertas,Logam,Kaca,Anorganik"
+              data-lat="-7.9864553"
+              data-lng="112.6437425"
+              data-source="google"
+            >
+              <img
+                src="bank sampah melati.webp"
+                alt="Unit Bank Sampah Malang Melati"
+              />
+
+              <div class="manager-info">
+                <span class="distance"> 2,5 km </span>
+
+                <h3>
+                  Unit Bank Sampah Malang "Melati"
+                  <span class="new-badge new-badge--google">Google Maps</span>
+                </h3>
+
+                <p>Sumber: Google Maps</p>
+
+                <p class="rating">★ 5.0 (2 ulasan)</p>
+
+                <p>
+                  Jl. Krisno No.36 02, Polehan, Kec. Blimbing, Kota Malang, Jawa
+                  Timur 65126
+                </p>
+              </div>
+
+              <div class="manager-services">
+                <div class="tags">
+                  <span>Plastik</span>
+                  <span>Kertas</span>
+                  <span>Logam</span>
+                  <span>Kaca</span>
+                  <span class="tag-general">Anorganik (Umum)</span>
+                </div>
+
+                <p>Buka: Setiap Hari 07.00-17.00 WIB</p>
+              </div>
+
+              <div class="manager-actions">
+                <button
+                  class="primary-button"
+                  onclick="
+                    contactManager(
+                      'Unit Bank Sampah Malang \'Melati\'',
+                      '+62 341 7729786',
+                    )
+                  "
+                >
+                  Hubungi
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="
+                    viewOnGoogleMaps(
+                      -7.9864553,
+                      112.6437425,
+                      'https://maps.app.goo.gl/5o73dwk8uUjwhP9z6',
+                    )
+                  "
+                >
+                  Lihat di Google Maps
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="showManagerDetail('Unit Bank Sampah Malang Melati')"
+                >
+                  Lihat Detail →
+                </button>
+              </div>
+            </article>
+
+            <!-- MANAGER 7 -->
+
+            <article
+              class="manager-result"
+              data-category="Plastik,Kertas,Logam,Kaca,Anorganik"
+              data-lat="-8.0097524"
+              data-lng="112.6482826"
+              data-source="google"
+            >
+              <img src="smart.jpg" alt="Smart Waste Center" />
+
+              <div class="manager-info">
+                <span class="distance"> 5,1 km </span>
+
+                <h3>
+                  Smart Waste Center
+                  <span class="new-badge new-badge--google">Google Maps</span>
+                </h3>
+
+                <p>Sumber: Google Maps</p>
+
+                <p class="rating">★ 5.0 (14 ulasan)</p>
+
+                <p>
+                  Jl. KH. Malik Dalam No.II, Buring, Kec. Kedungkandang, Kota
+                  Malang, Jawa Timur 65135
+                </p>
+              </div>
+
+              <div class="manager-services">
+                <div class="tags">
+                  <span>Plastik</span>
+                  <span>Kertas</span>
+                  <span>Logam</span>
+                  <span>Kaca</span>
+                  <span class="tag-general">Anorganik (Umum)</span>
+                </div>
+
+                <p>Buka: Senin-Jumat 09.00-16.00 WIB, Sabtu-Minggu Tutup</p>
+              </div>
+
+              <div class="manager-actions">
+                <button
+                  class="primary-button"
+                  onclick="
+                    contactManager('Smart Waste Center', '+62 811-3566-665')
+                  "
+                >
+                  Hubungi
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="
+                    viewOnGoogleMaps(
+                      -8.0097524,
+                      112.6482826,
+                      'https://maps.app.goo.gl/xegLX891oEuu8mUr7',
+                    )
+                  "
+                >
+                  Lihat di Google Maps
+                </button>
+
+                <button
+                  class="secondary-button"
+                  onclick="showManagerDetail('Smart Waste Center')"
+                >
+                  Lihat Detail →
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <!-- TIDAK TERSEDIA -->
+
+          <div id="notAvailable" class="not-available" style="display: none">
+            <h2>Pengelola Tidak Tersedia</h2>
+
+            <p>
+              Belum ditemukan pengelola untuk kategori sampah tersebut di
+              sekitar lokasi Anda.
+            </p>
+
+            <button onclick="showPage('edukasi')">
+              Lihat Cara Pengelolaan Mandiri
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODAL: DAFTAR SEBAGAI PENGELOLA -->
+
+      <div id="registerModal" class="modal-overlay">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h2>Daftar sebagai Pengelola</h2>
+
+            <button class="modal-close" onclick="closeRegisterModal()">
+              ×
+            </button>
+          </div>
+
+          <p class="modal-subtitle">
+            Isi data bank sampah / tempat pengelolaan Anda agar dapat ditemukan
+            pengguna lain di peta.
+          </p>
+
+          <form id="registerForm" onsubmit="handleRegisterSubmit(event)">
+            <label>
+              Nama Tempat / Bank Sampah
+              <input
+                type="text"
+                id="regNamaTempat"
+                placeholder="Contoh: Bank Sampah Makmur Jaya"
+                required
+              />
+            </label>
+
+            <label>
+              Nama Ketua Pengelola
+              <input
+                type="text"
+                id="regKetua"
+                placeholder="Nama penanggung jawab"
+                required
+              />
+            </label>
+
+            <label>
+              Jumlah Karyawan
+              <input
+                type="number"
+                id="regJumlahKaryawan"
+                min="1"
+                placeholder="Contoh: 5"
+                required
+              />
+            </label>
+
+            <label>
+              Nomor Telepon / WhatsApp
+              <input
+                type="tel"
+                id="regTelepon"
+                placeholder="08xxxxxxxxxx"
+                required
+              />
+            </label>
+
+            <label>
+              Alamat Lengkap
+              <input
+                type="text"
+                id="regAlamat"
+                placeholder="Jl. Contoh No.1, Malang"
+                required
+              />
+            </label>
+
+            <label>
+              Jam Operasional
+              <input
+                type="text"
+                id="regJamOperasional"
+                placeholder="Contoh: 08.00 - 16.00 WIB"
+              />
+            </label>
+
+            <fieldset class="reg-category-fieldset">
+              <legend>Kelas Pengelola</legend>
+
+              <div class="reg-checkbox-grid reg-kelas-grid">
+                <label class="reg-kelas-option">
+                  <input
+                    type="radio"
+                    name="regKelas"
+                    value="institusional"
+                    checked
+                  />
+                  <span>
+                    <strong>Institusional</strong>
+                    <small
+                      >DLH, bank sampah resmi, TPS3R, atau fasilitas
+                      berizin</small
+                    >
+                  </span>
+                </label>
+
+                <label class="reg-kelas-option">
+                  <input type="radio" name="regKelas" value="mandiri" />
+                  <span>
+                    <strong>Mandiri</strong>
+                    <small
+                      >Perorangan/UMKM yang baru mulai (komposter rumahan,
+                      pengrajin, dll)</small
+                    >
+                  </span>
+                </label>
+              </div>
+
+              <p class="category-hint">
+                Pengelola kelas <strong>Mandiri</strong> akan dibatasi kapasitas
+                penerimaan di awal dan naik bertahap setelah riwayat verifikasi
+                baik, supaya tidak ada penumpukan sampah yang tidak sanggup
+                diolah.
+              </p>
+            </fieldset>
+
+            <label>
+              Kapasitas Olah Harian (kg)
+              <input
+                type="number"
+                id="regKapasitas"
+                min="1"
+                placeholder="Contoh: 50"
+                required
+              />
+            </label>
+
+            <div class="reg-location-row">
+              <div>
+                <span id="regLokasiStatus">
+                  Lokasi belum diambil. Titik lokasi menentukan posisi di peta.
+                </span>
+              </div>
+
+              <button
+                type="button"
+                class="secondary-button"
+                onclick="captureRegisterLocation()"
+              >
+                📍 Gunakan Lokasi Saya Saat Ini
+              </button>
+            </div>
+
+            <fieldset class="reg-category-fieldset">
+              <legend>Jenis Sampah yang Diterima</legend>
+
+              <div class="reg-checkbox-grid">
+                <label><input type="checkbox" value="Plastik" /> Plastik</label>
+                <label><input type="checkbox" value="Kertas" /> Kertas</label>
+                <label><input type="checkbox" value="Logam" /> Logam</label>
+                <label><input type="checkbox" value="Kaca" /> Kaca</label>
+                <label><input type="checkbox" value="Organik" /> Organik</label>
+                <label
+                  ><input type="checkbox" value="Elektronik" />
+                  Elektronik</label
+                >
+                <label
+                  ><input type="checkbox" value="Bioplastik" />
+                  Bioplastik</label
+                >
+                <label><input type="checkbox" value="Lainnya" /> Lainnya</label>
+              </div>
+            </fieldset>
+
+            <div class="modal-actions">
+              <button
+                type="button"
+                class="secondary-button"
+                onclick="closeRegisterModal()"
+              >
+                Batal
+              </button>
+
+              <button type="submit" class="primary-button">
+                Kirim Pendaftaran
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- MODAL: TAMBAHKAN PRODUK BARU -->
+
+      <div id="productModal" class="modal-overlay">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h2>Tambahkan Produk Baru</h2>
+
+            <button class="modal-close" onclick="closeProductModal()">×</button>
+          </div>
+
+          <p class="modal-subtitle">
+            Unggah produk hasil daur ulang Anda. Produk akan langsung tampil di
+            menu <strong>Pembelian</strong> agar bisa dilihat dan dibeli
+            pengguna lain.
+          </p>
+
+          <form id="productForm" onsubmit="handleProductSubmit(event)">
+            <label>
+              Foto Produk
+              <input
+                type="file"
+                id="prodFoto"
+                accept="image/*"
+                onchange="handleProductPhotoChange(event)"
+                required
+              />
+            </label>
+
+            <div class="prod-photo-preview" id="prodFotoPreview">
+              Belum ada foto dipilih.
+            </div>
+
+            <label>
+              Nama Produk
+              <input
+                type="text"
+                id="prodNama"
+                placeholder="Contoh: Tas Tote Daur Ulang Plastik"
+                required
+              />
+            </label>
+
+            <label>
+              Kategori Produk
+              <select id="prodKategori" required>
+                <option value="Plastik">Produk Plastik</option>
+                <option value="Kertas">Produk Kertas</option>
+                <option value="Organik">Produk Organik</option>
+                <option value="Kain">Produk Kain</option>
+                <option value="Logam & Kaca">Produk Logam & Kaca</option>
+              </select>
+            </label>
+
+            <label>
+              Harga (Rp)
+              <input
+                type="number"
+                id="prodHarga"
+                min="0"
+                placeholder="Contoh: 50000"
+                required
+              />
+            </label>
+
+            <label>
+              Kontak (WhatsApp)
+              <input
+                type="tel"
+                id="prodKontak"
+                placeholder="08xxxxxxxxxx"
+                required
+              />
+            </label>
+
+            <label>
+              Deskripsi Singkat
+              <input
+                type="text"
+                id="prodDeskripsi"
+                placeholder="Contoh: Material Plastik PET"
+              />
+            </label>
+
+            <label>
+              Kode Batch Asal Sampah (opsional)
+              <select id="prodKodeBatch">
+                <option value="">
+                  Tidak dihubungkan ke penjemputan Reloop
+                </option>
+              </select>
+            </label>
+
+            <p class="category-hint">
+              Menghubungkan produk ke kode batch membuatnya dapat dilacak balik
+              ke asal sampahnya (traceability), sehingga klaim "hasil daur
+              ulang" bisa dibuktikan ke pembeli.
+            </p>
+
+            <div class="modal-actions">
+              <button
+                type="button"
+                class="secondary-button"
+                onclick="closeProductModal()"
+              >
+                Batal
+              </button>
+
+              <button type="submit" class="primary-button">
+                Unggah Produk
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- =====================================================
+         JEMPUT SAMPAH (PENGAJUAN, PASPOR DIGITAL & VERIFIKASI)
+    ====================================================== -->
+
+    <main id="jemput" class="page">
+      <section
+        class="page-hero"
+        style="background-image: url(&quot;images/background1.png&quot;)"
+      >
+        <div>
+          <h1>Jemput Sampah &amp; Lacak Statusnya</h1>
+
+          <p>
+            Ajukan penjemputan, dapatkan kode batch (paspor digital), dan lihat
+            statusnya sampai benar-benar diverifikasi diterima oleh pengelola
+            tujuan.
+          </p>
+        </div>
+      </section>
+
+      <section class="jemput-page">
+        <div class="jemput-riwayat-box" style="grid-column: 1 / -1">
+          <h2>Pengelola Terdekat &amp; Rute Penjemputan</h2>
+
+          <p>
+            Direkomendasikan berdasarkan jarak dari lokasi Anda saat ini. Pilih
+            salah satu untuk melihat perkiraan rute &amp; jarak menuju pengelola
+            tersebut &mdash; rute yang sama juga bisa dilihat oleh pihak
+            pengelola setelah Anda mengajukan penjemputan.
+          </p>
+
+          <div class="jemput-map-layout">
+            <div id="jemputMap" class="fake-map"></div>
+
+            <div class="jemput-rekomendasi-panel">
+              <div id="jemputRekomendasiList" class="jemput-rekomendasi-list">
+                <p class="empty-note">
+                  Memuat rekomendasi pengelola terdekat...
+                </p>
+              </div>
+
+              <div id="jemputRouteInfo" class="jemput-route-info"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="jemput-page">
+        <div class="jemput-form-box">
+          <h2>Ajukan Penjemputan</h2>
+
+          <p>
+            Setiap pengajuan mendapat <strong>kode batch unik</strong> yang
+            mengikuti sampah Anda sampai ke tahap verifikasi oleh pengelola,
+            supaya statusnya bisa dibuktikan &mdash; bukan hanya "sudah
+            dijemput".
+          </p>
+
+          <div
+            id="jemputLockedNote"
+            class="locked-feature-note"
+            style="display: none"
+          >
+            Anda perlu <strong>masuk (login)</strong> dengan akun Pengguna
+            terlebih dahulu untuk bisa mengajukan penjemputan.
+            <button
+              type="button"
+              class="link-button"
+              onclick="showPage('login')"
+            >
+              Masuk
+            </button>
+            atau
+            <button
+              type="button"
+              class="link-button"
+              onclick="showPage('signup')"
+            >
+              buat akun
+            </button>
+            dulu, ya.
+          </div>
+
+          <form id="jemputForm" onsubmit="handleJemputSubmit(event)">
+            <label>
+              Jenis Sampah
+              <select id="jemputJenis" required>
+                <option value="Plastik">Plastik</option>
+                <option value="Kertas">Kertas</option>
+                <option value="Logam">Logam</option>
+                <option value="Kaca">Kaca</option>
+                <option value="Organik">Organik</option>
+                <option value="Elektronik">Elektronik</option>
+                <option value="Bioplastik">Bioplastik</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </label>
+
+            <label>
+              Perkiraan Berat (kg)
+              <input
+                type="number"
+                id="jemputBerat"
+                min="0.1"
+                step="0.1"
+                placeholder="Contoh: 5"
+                required
+              />
+            </label>
+
+            <label>
+              Pengelola Tujuan
+              <select id="jemputPengelola" required>
+                <option value="">Memuat daftar pengelola...</option>
+              </select>
+            </label>
+
+            <label>
+              Catatan (opsional)
+              <input
+                type="text"
+                id="jemputCatatan"
+                placeholder="Contoh: kondisi kering, sudah dipilah per jenis"
+              />
+            </label>
+
+            <!-- VERIFIKASI KAMERA -->
+            <div class="camera-verification-box">
+              <div>
+                <strong>Verifikasi Sampah dengan Kamera (Wajib)</strong>
+                <p>
+                  Foto sampah Anda untuk tahap verifikasi visual. AI mengenali
+                  Organik, Plastik, Kaca, Kertas, dan Anorganik lainnya. Foto
+                  dianalisis di perangkat Anda dan tidak dikirim ke server.
+                  <strong
+                    >Hasil deteksi AI harus sesuai dengan "Jenis Sampah" yang
+                    Anda pilih di atas</strong
+                  >, kalau tidak sesuai pengajuan akan ditolak.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                class="secondary-button camera-open-button"
+                onclick="openWasteCamera()"
+              >
+                📷 Buka Kamera
+              </button>
+
+              <div id="cameraResult" class="camera-result" hidden>
+                <span id="cameraStatusIcon">✓</span>
+                <div>
+                  <strong id="cameraResultTitle">Belum ada verifikasi</strong>
+                  <p id="cameraResultText">Kamera belum digunakan.</p>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="primary-button">
+              Ajukan Penjemputan
+            </button>
+          </form>
+
+          <p class="category-hint">
+            Catatan demo: karena belum ada mitra driver sungguhan, tahap
+            "dijemput" pada prototipe ini disederhanakan &mdash; verifikasi
+            langsung dilakukan oleh akun Pengelola tujuan saat menerima sampah.
+          </p>
+        </div>
+
+        <div class="jemput-riwayat-box">
+          <h2>Riwayat Penjemputan (30 Hari Terakhir)</h2>
+
+          <p>
+            Menampilkan pengajuan dalam <strong>satu bulan terakhir</strong>
+            di perangkat ini, dikelompokkan menjadi
+            <strong>Masih Dalam Proses</strong> (baru dideklarasikan, belum
+            dicocokkan pengelola) dan <strong>Sudah Diserahkan</strong>
+            (berat/jenisnya sudah dicocokkan &amp; diterima langsung oleh
+            pengelola). Foto verifikasi setiap pengajuan ikut tersimpan di
+            riwayat ini.
+          </p>
+
+          <div id="riwayatBatchList">
+            <p class="empty-note">Belum ada pengajuan penjemputan.</p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="panelPengelolaSection"
+        class="jemput-page"
+        style="display: none"
+      >
+        <div class="jemput-riwayat-box" style="grid-column: 1 / -1">
+          <h2>Panel Verifikasi Pengelola</h2>
+
+          <p>
+            Pengajuan yang ditujukan ke tempat Anda. Konfirmasi berat yang
+            benar-benar diterima &mdash; ini yang menutup celah "sampah dijemput
+            tapi tidak pernah benar-benar diolah".
+          </p>
+
+          <div id="panelPengelolaList">
+            <p class="empty-note">Tidak ada pengajuan yang menunggu.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         DASHBOARD (AGREGAT VERIFIKASI SIRKULARITAS)
+    ====================================================== -->
+
+    <main id="dashboard" class="page">
+      <section
+        class="page-hero"
+        style="background-image: url(&quot;images/background1.png&quot;)"
+      >
+        <div>
+          <h1>Dashboard Verifikasi Sirkularitas</h1>
+
+          <p>
+            Ringkasan data dari aktivitas Jemput Sampah, jaringan pengelola, dan
+            produk tertelusuri di perangkat ini.
+          </p>
+        </div>
+      </section>
+
+      <section class="dashboard-section">
+        <div class="dashboard-grid">
+          <div class="stat-card">
+            <span id="statTotalBatch">0</span>
+            <p>Total Pengajuan Penjemputan</p>
+          </div>
+
+          <div class="stat-card">
+            <span id="statVerified">0</span>
+            <p>Batch Terverifikasi Pengelola</p>
+          </div>
+
+          <div class="stat-card">
+            <span id="statVerifiedWeight">0 kg</span>
+            <p>Total Berat Terverifikasi</p>
+          </div>
+
+          <div class="stat-card">
+            <span id="statAccuracy">-</span>
+            <p>Rata-rata Akurasi Deklarasi</p>
+          </div>
+
+          <div class="stat-card">
+            <span id="statPengelola">0</span>
+            <p>Pengelola Terdaftar (Institusional / Mandiri)</p>
+          </div>
+
+          <div class="stat-card">
+            <span id="statProdukLacak">0</span>
+            <p>Produk dengan Kode Lacak</p>
+          </div>
+        </div>
+
+        <p class="category-hint">
+          Catatan: dashboard ini adalah prototipe front-end, sehingga angka di
+          atas dihitung dari data yang tersimpan di browser (localStorage)
+          perangkat ini saja &mdash; belum mengagregasi data lintas pengguna
+          sungguhan. Pada versi produksi, angka ini akan berasal dari basis data
+          bersama dan dipakai sebagai laporan untuk DLH/produsen (EPR).
+        </p>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         EDUKASI
+    ====================================================== -->
+
+    <main id="edukasi" class="page">
+      <section
+        class="page-hero"
+        style="background-image: url(&quot;images/background1.png&quot;)"
+      >
+        <div>
+          <h1>Edukasi Pengelolaan Sampah</h1>
+
+          <p>
+            Pelajari cara mengelola limbah secara mandiri dan memahami isu
+            lingkungan.
+          </p>
+        </div>
+      </section>
+
+      <section class="education-section">
+        <h2>Pengelolaan Limbah Mandiri</h2>
+
+        <p>Pelajari langkah sederhana yang bisa dilakukan dari rumah.</p>
+
+        <div class="education-grid">
+          <article class="education-card">
+            <img
+              src="cara_mengelola_ssampah_plastik.jpg"
+              alt="Pengelolaan Plastik"
+            />
+
+            <div>
+              <span> Plastik </span>
+
+              <h3>Cara Mengelola Sampah Plastik</h3>
+
+              <p>
+                Pelajari cara memilah, membersihkan, dan menggunakan kembali
+                sampah plastik.
+              </p>
+
+              <button onclick="openEducation('plastik')">
+                Baca Selengkapnya →
+              </button>
+            </div>
+          </article>
+
+          <article class="education-card">
+            <img src="kompos_sampah.jpg" alt="Pengelolaan Organik" />
+
+            <div>
+              <span> Organik </span>
+
+              <h3>Membuat Kompos di Rumah</h3>
+
+              <p>Ubah sisa makanan dan daun menjadi kompos.</p>
+
+              <button onclick="openEducation('kompos')">
+                Baca Selengkapnya →
+              </button>
+            </div>
+          </article>
+
+          <article class="education-card">
+            <img src="mengelola_kertas.jpg" alt="Pengelolaan Kertas" />
+
+            <div>
+              <span> Kertas </span>
+
+              <h3>Mengolah Sampah Kertas</h3>
+
+              <p>
+                Pelajari cara menggunakan kembali kertas yang sudah tidak
+                digunakan.
+              </p>
+
+              <button onclick="openEducation('kertas')">
+                Baca Selengkapnya →
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div class="journal-section">
+          <h2>Jurnal & Artikel Lingkungan</h2>
+
+          <article>
+            <h3>Ekonomi Sirkular dan Masa Depan Pengelolaan Sampah</h3>
+
+            <p>
+              Artikel mengenai bagaimana sampah dapat kembali menjadi sumber
+              daya.
+            </p>
+
+            <button>Baca Artikel →</button>
+          </article>
+
+          <article>
+            <h3>Dampak Sampah Plastik terhadap Lingkungan</h3>
+
+            <p>
+              Memahami dampak penggunaan plastik dan pentingnya pengelolaan yang
+              tepat.
+            </p>
+
+            <button>Baca Artikel →</button>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         PEMBELIAN
+    ====================================================== -->
+
+    <main id="pembelian" class="page">
+      <section
+        class="page-hero"
+        style="background-image: url(&quot;images/background1.png&quot;)"
+      >
+        <div>
+          <h1>Pembelian Produk Daur Ulang</h1>
+
+          <p>
+            Dukung ekonomi sirkular dengan membeli produk hasil pengolahan
+            sampah.
+          </p>
+        </div>
+      </section>
+
+      <section class="shopping-section">
+        <div class="shopping-layout">
+          <aside class="shopping-filter">
+            <h2>Kategori Produk</h2>
+
+            <button onclick="filterProduct('Semua')">Semua Produk</button>
+
+            <button onclick="filterProduct('Plastik')">Produk Plastik</button>
+
+            <button onclick="filterProduct('Kertas')">Produk Kertas</button>
+
+            <button onclick="filterProduct('Organik')">Produk Organik</button>
+
+            <button onclick="filterProduct('Kain')">Produk Kain</button>
+
+            <button onclick="filterProduct('Logam & Kaca')">
+              Produk Logam & Kaca
+            </button>
+          </aside>
+
+          <div class="shopping-products">
+            <div class="search-bar">
+              <input type="text" placeholder="Cari produk daur ulang..." />
+            </div>
+
+            <div class="product-grid large" id="productGrid">
+              <article class="shop-product" data-category="Plastik">
+                <img src="tas_ekonomi.jpg" alt="Tas Tote" />
+
+                <span> Dari Plastik </span>
+
+                <h3>Tas Tote Daur Ulang Plastik</h3>
+
+                <p>Material: Plastik PET</p>
+
+                <strong> Rp 75.000 </strong>
+
+                <button onclick="buyProduct('Tas Tote Daur Ulang Plastik')">
+                  Beli Produk
+                </button>
+              </article>
+
+              <article class="shop-product" data-category="Kertas">
+                <img src="buku_daur_ulang.jpg" alt="Buku" />
+
+                <span> Dari Kertas </span>
+
+                <h3>Buku Catatan Kertas Daur Ulang</h3>
+
+                <p>Material: Kertas Bekas</p>
+
+                <strong> Rp 35.000 </strong>
+
+                <button onclick="buyProduct('Buku Catatan Kertas Daur Ulang')">
+                  Beli Produk
+                </button>
+              </article>
+
+              <article class="shop-product" data-category="Organik">
+                <img src="pot_kompos.jpeg" alt="Pot Kompos" />
+
+                <span> Dari Organik </span>
+
+                <h3>Pot Kompos Organik</h3>
+
+                <p>Material: Kompos Organik</p>
+
+                <strong> Rp 30.000 </strong>
+
+                <button onclick="buyProduct('Pot Kompos Organik')">
+                  Beli Produk
+                </button>
+              </article>
+
+              <article class="shop-product" data-category="Plastik">
+                <img src="tumbler.jpg" alt="Botol" />
+
+                <span> Dari Plastik </span>
+
+                <h3>Botol Minum Recycled Plastic</h3>
+
+                <p>Material: Plastik HDPE</p>
+
+                <strong> Rp 65.000 </strong>
+
+                <button onclick="buyProduct('Botol Minum Recycled Plastic')">
+                  Beli Produk
+                </button>
+              </article>
+            </div>
+
+            <div
+              id="productNotAvailable"
+              class="not-available"
+              style="display: none"
+            >
+              <h2>Belum Ada Produk</h2>
+
+              <p>Belum ada produk untuk kategori ini.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         PRODUK
+    ====================================================== -->
+
+    <main id="produk" class="page">
+      <section
+        class="page-hero"
+        style="background-image: url(&quot;images/background1.png&quot;)"
+      >
+        <div>
+          <h1>Produk Hasil Olahan Limbah</h1>
+
+          <p>
+            Lihat berbagai produk yang dapat dibuat dari limbah dan pelajari
+            cara pembuatannya.
+          </p>
+        </div>
+      </section>
+
+      <section class="product-learning">
+        <div class="product-intro">
+          <h2>Dari Limbah Menjadi Produk</h2>
+
+          <p>
+            Temukan berbagai ide pemanfaatan limbah yang bisa dilakukan secara
+            mandiri.
+          </p>
+        </div>
+
+        <div class="product-learning-grid">
+          <article>
+            <img src="tas_daur_ulang.png" alt="Tas Plastik" />
+
+            <h3>Tas dari Plastik Bekas</h3>
+
+            <p>
+              Tingkat kesulitan:
+              <strong>Mudah</strong>
+            </p>
+
+            <button onclick="makeProduct('Tas dari Plastik Bekas')">
+              Cara Membuat →
+            </button>
+          </article>
+
+          <article>
+            <img src="pot_tanaman.jpg" alt="Pot Tanaman" />
+
+            <h3>Pot Tanaman dari Botol</h3>
+
+            <p>
+              Tingkat kesulitan:
+              <strong>Mudah</strong>
+            </p>
+
+            <button onclick="makeProduct('Pot Tanaman dari Botol')">
+              Cara Membuat →
+            </button>
+          </article>
+
+          <article>
+            <img src="kompos_sampah.jpg" alt="Kompos" />
+
+            <h3>Kompos dari Sampah Organik</h3>
+
+            <p>
+              Tingkat kesulitan:
+              <strong>Mudah</strong>
+            </p>
+
+            <button onclick="makeProduct('Kompos dari Sampah Organik')">
+              Cara Membuat →
+            </button>
+          </article>
+        </div>
+
+        <div class="self-making">
+          <h2>Buat Sendiri di Rumah</h2>
+
+          <p>Pilih tingkat kesulitan sesuai kemampuan Anda.</p>
+
+          <div>
+            <button>Mudah</button>
+
+            <button>Menengah</button>
+
+            <button>Sulit</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         PENGATURAN
+    ====================================================== -->
+
+    <main id="pengaturan" class="page">
+      <section class="settings-section">
+        <h1>Pengaturan</h1>
+
+        <p>Kelola akun dan preferensi Anda.</p>
+
+        <div class="settings-card" id="accountCard">
+          <h2>Akun</h2>
+
+          <div id="accountLoggedIn">
+            <div class="setting-row">
+              <div>
+                <h3>Nama Pengguna</h3>
+
+                <p id="accountNamaDisplay">-</p>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <h3>Email</h3>
+
+                <p id="accountEmailDisplay">-</p>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <h3>Jenis Akun</h3>
+
+                <p id="accountRoleDisplay">-</p>
+              </div>
+            </div>
+
+            <div
+              class="setting-row"
+              id="accountPortalRow"
+              style="display: none"
+            >
+              <div>
+                <h3>Portal Pengelola</h3>
+
+                <p>
+                  Verifikasi penjemputan, pantau kapasitas, dan kelola profil
+                  tempat Anda.
+                </p>
+              </div>
+
+              <button onclick="showPage('portal-pengelola')">
+                Buka Portal
+              </button>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <h3>Keluar dari Akun</h3>
+
+                <p>Anda akan keluar dari sesi ReLoop saat ini.</p>
+              </div>
+
+              <button onclick="logoutUser()">Keluar</button>
+            </div>
+          </div>
+
+          <div id="accountLoggedOut">
+            <div class="setting-row">
+              <div>
+                <h3>Anda belum masuk</h3>
+
+                <p>
+                  Masuk atau daftar untuk menyimpan pengelola & produk Anda,
+                  serta membuka fitur khusus Pengelola.
+                </p>
+              </div>
+
+              <button onclick="showPage('login')">Masuk</button>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <h3>Belum punya akun?</h3>
+
+                <p>Daftar sebagai pengguna biasa atau sebagai pengelola.</p>
+              </div>
+
+              <button onclick="showPage('signup')">Daftar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h2>Preferensi</h2>
+
+          <div class="setting-row">
+            <div>
+              <h3>Notifikasi</h3>
+
+              <p>Terima informasi terbaru dari ReLoop.</p>
+            </div>
+
+            <label class="switch">
+              <input type="checkbox" checked />
+
+              <span></span>
+            </label>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <h3>Lokasi</h3>
+
+              <p>Gunakan lokasi untuk mencari pengelola terdekat.</p>
+            </div>
+
+            <label class="switch">
+              <input type="checkbox" checked />
+
+              <span></span>
+            </label>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         LOGIN
+    ====================================================== -->
+
+    <main id="login" class="page">
+      <section class="auth-section">
+        <div class="auth-card">
+          <h1>Masuk ke ReLoop</h1>
+
+          <p>Masuk untuk mengakses fitur sesuai jenis akun Anda.</p>
+
+          <form
+            id="loginForm"
+            class="auth-form"
+            onsubmit="handleLoginSubmit(event)"
+            onchange="document.getElementById('loginError').hidden = true"
+          >
+            <fieldset class="role-fieldset">
+              <legend>Masuk Sebagai</legend>
+
+              <div class="role-options">
+                <label class="role-option">
+                  <input
+                    type="radio"
+                    name="loginRole"
+                    value="pengguna"
+                    checked
+                  />
+                  <span>
+                    <strong>Pengguna Biasa</strong>
+                    <small
+                      >Cari pengelola, ajukan penjemputan & beli produk</small
+                    >
+                  </span>
+                </label>
+
+                <label class="role-option">
+                  <input type="radio" name="loginRole" value="pengelola" />
+                  <span>
+                    <strong>Pengelola</strong>
+                    <small
+                      >Buka Portal Pengelola untuk verifikasi & kelola
+                      tempat</small
+                    >
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+
+            <label>
+              Email
+              <input
+                type="email"
+                id="loginEmail"
+                placeholder="nama@email.com"
+                required
+              />
+            </label>
+
+            <label>
+              Kata Sandi
+              <input
+                type="password"
+                id="loginPassword"
+                placeholder="Kata sandi"
+                required
+              />
+            </label>
+
+            <p id="loginError" class="auth-error" role="alert" hidden></p>
+
+            <button type="submit" class="primary-button">Masuk</button>
+          </form>
+
+          <p class="auth-switch">
+            Belum punya akun?
+            <button
+              type="button"
+              class="link-button"
+              onclick="showPage('signup')"
+            >
+              Daftar di sini
+            </button>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         SIGN UP
+    ====================================================== -->
+
+    <main id="signup" class="page">
+      <section class="auth-section">
+        <div class="auth-card">
+          <h1>Buat Akun ReLoop</h1>
+
+          <p>Pilih jenis akun sesuai kebutuhan Anda.</p>
+
+          <form
+            id="signupForm"
+            class="auth-form"
+            onsubmit="handleSignupSubmit(event)"
+          >
+            <label>
+              Nama Lengkap
+              <input
+                type="text"
+                id="signupNama"
+                placeholder="Nama Anda"
+                required
+              />
+            </label>
+
+            <label>
+              Email
+              <input
+                type="email"
+                id="signupEmail"
+                placeholder="nama@email.com"
+                required
+              />
+            </label>
+
+            <label>
+              Kata Sandi
+              <input
+                type="password"
+                id="signupPassword"
+                placeholder="Buat kata sandi"
+                required
+                minlength="6"
+              />
+            </label>
+
+            <fieldset class="role-fieldset">
+              <legend>Daftar Sebagai</legend>
+
+              <div class="role-options">
+                <label class="role-option">
+                  <input
+                    type="radio"
+                    name="signupRole"
+                    value="pengguna"
+                    checked
+                  />
+                  <span>
+                    <strong>Pengguna Biasa</strong>
+                    <small>Cari pengelola & beli produk daur ulang</small>
+                  </span>
+                </label>
+
+                <label class="role-option">
+                  <input type="radio" name="signupRole" value="pengelola" />
+                  <span>
+                    <strong>Pengelola</strong>
+                    <small>Kelola bank sampah & unggah produk daur ulang</small>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+
+            <button type="submit" class="primary-button">Daftar</button>
+          </form>
+
+          <p class="auth-switch">
+            Sudah punya akun?
+            <button
+              type="button"
+              class="link-button"
+              onclick="showPage('login')"
+            >
+              Masuk di sini
+            </button>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         PORTAL PENGELOLA (khusus akun dengan role "pengelola")
+    ====================================================== -->
+
+    <main id="portal-pengelola" class="page">
+      <section
+        class="page-hero"
+        style="background-image: url(&quot;images/background1.png&quot;)"
+      >
+        <div>
+          <h1>Portal Pengelola</h1>
+
+          <p>
+            Ruang kerja Anda: verifikasi penjemputan yang masuk, pantau sisa
+            kapasitas harian, telusuri batch sampai ke produk, dan kelola profil
+            tempat.
+          </p>
+        </div>
+      </section>
+
+      <!-- Keadaan terkunci: belum masuk / bukan akun Pengelola / belum daftar tempat.
+           Isinya diisi otomatis oleh renderPortalLocked() di script.js -->
+      <section
+        id="portalLocked"
+        class="portal-wrap"
+        style="display: none"
+      ></section>
+
+      <!-- Isi portal: tampil hanya untuk Pengelola yang sudah punya tempat -->
+      <section id="portalContent" class="portal-wrap" style="display: none">
+        <!-- Notifikasi singkat (toast) setelah verifikasi / simpan profil -->
+        <div id="portalFlash" class="portal-flash" role="status" hidden></div>
+
+        <!-- 1. RINGKASAN TEMPAT + SISA KAPASITAS HARI INI -->
+        <div class="portal-place-card">
+          <div class="portal-place-head">
+            <div>
+              <h2 id="portalPlaceName">-</h2>
+              <span id="portalPlaceKelas"></span>
+            </div>
+
+            <!-- Muncul hanya jika satu akun punya lebih dari satu tempat -->
+            <label
+              id="portalPlaceSwitch"
+              class="portal-place-switch"
+              style="display: none"
+            >
+              Tempat aktif
+              <select
+                id="portalPlaceSelect"
+                onchange="handlePortalPlaceChange()"
+              ></select>
+            </label>
+          </div>
+
+          <div class="portal-capacity-row">
+            <div>
+              <small>Kapasitas harian</small>
+              <strong id="portalCapDaily">-</strong>
+            </div>
+
+            <div>
+              <small>Terverifikasi hari ini</small>
+              <strong id="portalCapUsed">-</strong>
+            </div>
+
+            <div>
+              <small>Sisa kapasitas hari ini</small>
+              <strong id="portalCapLeft">-</strong>
+            </div>
+          </div>
+
+          <div class="capacity-box">
+            <div class="capacity-bar">
+              <div
+                class="capacity-bar-fill"
+                id="portalCapFill"
+                style="width: 0%"
+              ></div>
+            </div>
+
+            <small id="portalCapText"></small>
+          </div>
+
+          <div class="portal-place-meta" id="portalPlaceMeta"></div>
+        </div>
+
+        <!-- 5. RINGKASAN PERFORMA -->
+        <div class="portal-stat-grid">
+          <div class="stat-card">
+            <span id="portalStatMonthWeight">0 kg</span>
+            <p>Berat Terverifikasi Bulan Ini</p>
+          </div>
+
+          <div class="stat-card">
+            <span id="portalStatAvgDiff">-</span>
+            <p>Rata-rata Selisih Deklarasi vs Verifikasi</p>
+            <small id="portalStatAvgHint"></small>
+          </div>
+
+          <div class="stat-card">
+            <span id="portalStatTraced">0</span>
+            <p>Produk Anda dengan Kode Lacak</p>
+          </div>
+
+          <div class="stat-card">
+            <span id="portalStatUntraced">0</span>
+            <p>Produk Anda tanpa Kode Lacak</p>
+          </div>
+        </div>
+
+        <!-- TAB KERJA -->
+        <div class="portal-tabs">
+          <button
+            type="button"
+            class="portal-tab active"
+            data-tab="pengajuan"
+            onclick="switchPortalTab('pengajuan')"
+          >
+            Pengajuan
+            <span
+              class="portal-tab-count"
+              id="portalTabPendingCount"
+              hidden
+            ></span>
+          </button>
+
+          <button
+            type="button"
+            class="portal-tab"
+            data-tab="riwayat"
+            onclick="switchPortalTab('riwayat')"
+          >
+            Riwayat &amp; Traceability
+          </button>
+
+          <button
+            type="button"
+            class="portal-tab"
+            data-tab="profil"
+            onclick="switchPortalTab('profil')"
+          >
+            Profil Tempat
+          </button>
+        </div>
+
+        <!-- 2. PENGAJUAN MASUK (bisa difilter berdasarkan status) -->
+        <div class="portal-panel" id="portalPanelPengajuan">
+          <div class="jemput-riwayat-box">
+            <h2>Pengajuan Penjemputan</h2>
+
+            <p>
+              Semua pengajuan yang ditujukan ke tempat Anda. Konfirmasi berat
+              yang benar-benar diterima untuk mengubah status
+              <strong>Menunggu</strong> menjadi
+              <strong>Terverifikasi</strong> (atau
+              <strong>Ditinjau</strong> bila selisihnya besar).
+            </p>
+
+            <div class="portal-chips" id="portalFilters"></div>
+
+            <div class="portal-batch-list" id="portalBatchList"></div>
+          </div>
+        </div>
+
+        <!-- 4. RIWAYAT VERIFIKASI + TRACEABILITY PRODUK -->
+        <div class="portal-panel" id="portalPanelRiwayat" style="display: none">
+          <div class="jemput-riwayat-box">
+            <h2>Riwayat Verifikasi &amp; Traceability</h2>
+
+            <p>
+              Batch yang pernah Anda verifikasi, lengkap dengan produk yang
+              sudah ditautkan ke kode batch tersebut.
+            </p>
+
+            <div class="portal-riwayat-toolbar">
+              <span id="portalRiwayatSummary"></span>
+
+              <button
+                type="button"
+                class="link-button"
+                onclick="openPortalProduct()"
+              >
+                + Tambahkan produk dari batch
+              </button>
+            </div>
+
+            <div class="portal-batch-list" id="portalRiwayatList"></div>
+          </div>
+        </div>
+
+        <!-- 6. PROFIL TEMPAT -->
+        <div class="portal-panel" id="portalPanelProfil" style="display: none">
+          <div class="jemput-riwayat-box">
+            <h2>Profil Tempat</h2>
+
+            <p>
+              Perbarui kapasitas harian, jam operasional, dan jenis sampah yang
+              Anda terima. Perubahan langsung tampil di daftar &amp; peta
+              Pengelola.
+            </p>
+
+            <form
+              id="portalProfilForm"
+              class="portal-form"
+              onsubmit="handlePortalProfilSubmit(event)"
+            >
+              <label>
+                Nama Tempat
+                <input type="text" id="portalProfilNama" disabled />
+              </label>
+
+              <p class="category-hint">
+                Nama tempat tidak bisa diubah karena dipakai sebagai penghubung
+                ke kode batch dan riwayat verifikasi.
+              </p>
+
+              <label>
+                Kapasitas Olah Harian (kg)
+                <input
+                  type="number"
+                  id="portalProfilKapasitas"
+                  min="1"
+                  step="any"
+                  required
+                />
+              </label>
+
+              <p
+                id="portalProfilKelasHint"
+                class="category-hint"
+                style="display: none"
+              >
+                Kelas <strong>Mandiri</strong>: kapasitas sebaiknya dinaikkan
+                bertahap sesuai riwayat verifikasi yang baik.
+              </p>
+
+              <label>
+                Jam Operasional
+                <input
+                  type="text"
+                  id="portalProfilJam"
+                  placeholder="Contoh: 08.00 - 16.00 WIB"
+                />
+              </label>
+
+              <fieldset class="reg-category-fieldset">
+                <legend>Jenis Sampah yang Diterima</legend>
+
+                <div class="reg-checkbox-grid" id="portalProfilKategori"></div>
+              </fieldset>
+
+              <p
+                id="portalProfilStatus"
+                class="portal-msg portal-msg--error"
+                role="alert"
+                hidden
+              ></p>
+
+              <button type="submit" class="primary-button">
+                Simpan Perubahan
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. MODAL: KONFIRMASI PENERIMAAN (pengganti prompt() bawaan browser) -->
+
+      <div id="portalConfirmModal" class="modal-overlay">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h2>Konfirmasi Penerimaan</h2>
+
+            <button
+              type="button"
+              class="modal-close"
+              onclick="closePortalConfirmModal()"
+            >
+              ×
+            </button>
+          </div>
+
+          <p class="modal-subtitle">
+            Cocokkan deklarasi pengguna dengan sampah yang benar-benar Anda
+            terima.
+          </p>
+
+          <div class="portal-confirm-summary" id="portalConfirmSummary"></div>
+
+          <form
+            id="portalConfirmForm"
+            class="portal-form"
+            onsubmit="handlePortalConfirmSubmit(event)"
+          >
+            <input type="hidden" id="portalConfirmBatchId" />
+
+            <label>
+              Jenis sampah yang diterima
+              <select id="portalConfirmJenis"></select>
+            </label>
+
+            <label>
+              Berat yang benar-benar diterima (kg)
+              <input
+                type="number"
+                id="portalConfirmBerat"
+                min="0"
+                step="any"
+                required
+                oninput="updatePortalConfirmPreview()"
+              />
+            </label>
+
+            <div class="portal-confirm-preview" id="portalConfirmPreview"></div>
+
+            <p
+              id="portalConfirmError"
+              class="portal-msg portal-msg--error"
+              role="alert"
+              hidden
+            ></p>
+
+            <div class="modal-actions">
+              <button
+                type="button"
+                class="secondary-button"
+                onclick="closePortalConfirmModal()"
+              >
+                Batal
+              </button>
+
+              <button type="submit" class="primary-button">
+                Simpan Verifikasi
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL KAMERA VERIFIKASI SAMPAH
+         Logika kamera + AI ada di script.js (bagian "AI DETEKSI SAMPAH").
+         Tiap tahap (kamera -> foto -> hasil) hanya menampilkan
+         tombol yang relevan. -->
+    <div id="wasteCameraModal" class="modal-overlay">
+      <div class="modal-box camera-modal-box">
+        <div class="modal-header">
+          <h2>Verifikasi Sampah</h2>
+          <button
+            type="button"
+            class="modal-close"
+            onclick="closeWasteCamera()"
+          >
+            ×
+          </button>
+        </div>
+
+        <p class="modal-subtitle" id="cameraSubtitle">
+          Arahkan kamera ke sampah yang ingin Anda ajukan.
+        </p>
+
+        <!-- Preview kamera (video) atau foto hasil jepretan (canvas) -->
+        <div class="camera-preview-wrap">
+          <video id="wasteCameraVideo" autoplay playsinline muted></video>
+          <canvas id="wasteCameraCanvas" hidden></canvas>
+
+          <!-- Tampilan saat AI sedang menganalisis -->
+          <div id="cameraLoading" class="camera-loading" hidden>
+            <div class="camera-spinner"></div>
+            <span>AI sedang menganalisis...</span>
+          </div>
+        </div>
+
+        <p id="cameraError" class="camera-error" role="alert" hidden></p>
+
+        <!-- Tombol tahap 1: kamera aktif -->
+        <div id="cameraStepLive" class="camera-controls">
+          <button
+            type="button"
+            id="cameraCaptureBtn"
+            class="primary-button"
+            onclick="captureWastePhoto()"
+          >
+            📸 Ambil Foto
+          </button>
+          <!-- Tombol ganti kamera depan/belakang (khusus perangkat
+               yang punya lebih dari satu kamera, mis. HP) -->
+          <button
+            type="button"
+            id="cameraSwitchBtn"
+            class="secondary-button"
+            onclick="switchWasteCamera()"
+            hidden
+          >
+            🔄 Kamera Depan
+          </button>
+          <button
+            type="button"
+            class="secondary-button"
+            onclick="openWasteGallery()"
+          >
+            🖼️ Pilih dari Galeri
+          </button>
+          <button
+            type="button"
+            class="secondary-button"
+            onclick="closeWasteCamera()"
+          >
+            Tutup
+          </button>
+        </div>
+
+        <!-- Tombol tahap 2: foto sudah diambil -->
+        <div id="cameraStepCaptured" class="camera-controls" hidden>
+          <button
+            type="button"
+            id="cameraRetakeBtn"
+            class="secondary-button"
+            onclick="retakeWastePhoto()"
+          >
+            🔄 Ulangi Foto
+          </button>
+          <button
+            type="button"
+            id="cameraAnalyzeBtn"
+            class="primary-button"
+            onclick="analyzeWastePhoto()"
+          >
+            🔍 Analisis
+          </button>
+        </div>
+
+        <!-- Tombol tahap 3: hasil tampil -->
+        <div id="cameraStepResult" class="camera-controls" hidden>
+          <button
+            type="button"
+            class="secondary-button"
+            onclick="retakeWastePhoto()"
+          >
+            🔄 Foto Lagi
+          </button>
+          <button
+            type="button"
+            class="primary-button"
+            onclick="closeWasteCamera()"
+          >
+            Selesai
+          </button>
+        </div>
+
+        <!-- Input file tersembunyi untuk "Pilih dari Galeri" -->
+        <input
+          type="file"
+          id="wasteCameraFile"
+          accept="image/*"
+          hidden
+          onchange="handleWasteGalleryPick(event)"
+        />
+
+        <!-- Hasil klasifikasi AI -->
+        <div id="cameraAiResult" class="ai-result" hidden>
+          <p class="ai-result-caption">Sampah terdeteksi</p>
+
+          <div class="ai-result-main">
+            <span class="ai-result-emoji" id="aiResultEmoji">♻️</span>
+
+            <div class="ai-result-name">
+              <strong class="ai-result-label" id="aiResultLabel"
+                >PLASTIK</strong
+              >
+              <span class="ai-result-english" id="aiResultEnglish"
+                >Plastic</span
+              >
+            </div>
+
+            <div class="ai-result-confidence">
+              <small>Confidence</small>
+              <strong id="aiResultConfidence">0%</strong>
+            </div>
+          </div>
+
+          <div class="ai-confidence-bar">
+            <div id="aiConfidenceFill"></div>
+          </div>
+
+          <p id="aiLowConfidenceNote" class="ai-warning" hidden>
+            AI kurang yakin dengan hasil ini. Coba foto ulang dengan cahaya
+            lebih terang, satu objek saja, dan latar yang polos.
+          </p>
+
+          <div class="ai-disposal">
+            <small>Rekomendasi pembuangan</small>
+            <strong id="aiDisposalTitle"></strong>
+            <p id="aiDisposalText"></p>
+          </div>
+
+          <details class="ai-scores">
+            <summary>Lihat skor semua kategori</summary>
+            <ul id="aiScoreList" class="ai-score-list"></ul>
+          </details>
+
+          <p class="ai-privacy-note">
+            🔒 Foto dianalisis langsung di browser Anda dan tidak dikirim ke
+            server atau API mana pun.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: RUTE PENJEMPUTAN (dipakai pengguna & pengelola) -->
+    <div id="routeModal" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 id="routeModalTitle">Rute Penjemputan</h2>
+
+          <button type="button" class="modal-close" onclick="closeRouteModal()">
+            ×
+          </button>
+        </div>
+
+        <p class="modal-subtitle">
+          Estimasi jarak garis lurus antara lokasi penjemputan dan pengelola
+          tujuan. Rute jalan sesungguhnya bisa sedikit berbeda.
+        </p>
+
+        <div id="routeModalMap" class="route-modal-map"></div>
+
+        <div id="routeModalInfo" class="jemput-route-info"></div>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="secondary-button"
+            onclick="closeRouteModal()"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         MODAL: DETAIL PRODUK (Pembelian)
+         Muncul saat tombol "Beli Produk" ditekan.
+         Isinya diisi otomatis oleh fungsi buyProduct() di script.js.
+    ====================================================== -->
+    <div
+      id="productDetailModal"
+      class="modal-overlay"
+      onclick="if (event.target === this) closeProductDetail();"
+    >
+      <div class="modal-box product-detail-box">
+        <div class="modal-header">
+          <h2>Detail Produk</h2>
+
+          <button
+            type="button"
+            class="modal-close"
+            onclick="closeProductDetail()"
+          >
+            ×
+          </button>
+        </div>
+
+        <img id="pdImage" class="pd-image" src="" alt="" />
+
+        <span id="pdCategory" class="pd-category"></span>
+
+        <h3 id="pdName" class="pd-name"></h3>
+
+        <p id="pdDesc" class="pd-desc"></p>
+
+        <div class="pd-price-row">
+          <span>Harga satuan</span>
+          <strong id="pdPrice">Rp 0</strong>
+        </div>
+
+        <div class="pd-qty-row">
+          <span>Jumlah</span>
+
+          <div class="pd-qty-control">
+            <button type="button" onclick="changeProductQty(-1)">−</button>
+            <span id="pdQty">1</span>
+            <button type="button" onclick="changeProductQty(1)">+</button>
+          </div>
+        </div>
+
+        <div class="pd-total-row">
+          <span>Total harga</span>
+          <strong id="pdTotal">Rp 0</strong>
+        </div>
+
+        <p id="pdNote" class="pd-note" hidden>
+          Tombol ini nantinya dapat diarahkan ke Shopee, TikTok Shop, Tokopedia,
+          atau website penjual.
+        </p>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="secondary-button"
+            onclick="closeProductDetail()"
+          >
+            Tutup
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            id="pdBuyBtn"
+            onclick="confirmBuyProduct()"
+          >
+            Beli Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         MODAL: PROFIL RELOOP
+         Muncul saat logo ReLoop di navbar ditekan.
+    ====================================================== -->
+    <div
+      id="reloopProfileModal"
+      class="modal-overlay"
+      onclick="if (event.target === this) closeReloopProfile();"
+    >
+      <div class="modal-box reloop-profile-box">
+        <div class="modal-header">
+          <h2>Profil ReLoop</h2>
+
+          <button
+            type="button"
+            class="modal-close"
+            onclick="closeReloopProfile()"
+          >
+            ×
+          </button>
+        </div>
+
+        <!-- Identitas -->
+        <div class="rp-identity">
+          <div class="rp-logo">
+            <img
+              src="Reloop.jpeg"
+              alt="Logo ReLoop"
+              onerror="
+                this.remove();
+                this.parentNode.textContent = 'R';
+              "
+            />
+          </div>
+
+          <div>
+            <h3>ReLoop</h3>
+            <p>Less Waste, More Life</p>
+          </div>
+        </div>
+
+        <!-- Tentang -->
+        <section class="rp-section">
+          <h4>Tentang ReLoop</h4>
+
+          <p>
+            ReLoop adalah platform yang bertujuan mengoptimalkan pengelolaan
+            limbah agar sampah masuk ke
+            <strong>fasilitas pengelolaan yang tepat</strong>, sehingga
+            <strong>mencegah kebocoran mikroplastik ke area sekitar</strong>
+            seperti tanah, sungai, dan laut.
+          </p>
+        </section>
+
+        <!-- Masalah -->
+        <section class="rp-section">
+          <h4>Masalah yang Ingin Diselesaikan</h4>
+
+          <p>
+            Sampah yang tidak sampai ke fasilitas yang sesuai, misalnya dibuang
+            sembarangan, dibakar, atau tercampur, dapat pecah menjadi serpihan
+            sangat kecil bernama <strong>mikroplastik</strong>. Serpihan ini
+            mudah terbawa air dan angin, lalu masuk ke lingkungan sekitar dan
+            rantai makanan. ReLoop membantu memastikan setiap jenis sampah
+            sampai ke pengelola yang tepat sejak awal.
+          </p>
+        </section>
+
+        <!-- Visi -->
+        <section class="rp-section">
+          <h4>Visi</h4>
+
+          <p>
+            Mewujudkan lingkungan yang lebih bersih dan ekonomi sirkular yang
+            berkelanjutan, di mana sampah hari ini menjadi sumber daya untuk
+            masa depan.
+          </p>
+        </section>
+
+        <!-- Misi -->
+        <section class="rp-section">
+          <h4>Misi</h4>
+
+          <ul class="rp-list">
+            <li>
+              Menghubungkan masyarakat dengan bank sampah dan pengelola terdekat
+              sesuai jenis sampahnya.
+            </li>
+            <li>
+              Membantu mengenali jenis sampah lewat verifikasi AI yang berjalan
+              langsung di browser.
+            </li>
+            <li>
+              Melacak perjalanan sampah lewat kode batch, dari penjemputan
+              sampai diterima pengelola.
+            </li>
+            <li>
+              Mengubah sampah menjadi produk bernilai dan meningkatkan edukasi
+              pengelolaan sampah.
+            </li>
+          </ul>
+        </section>
+
+        <!-- Cara kerja -->
+        <section class="rp-section">
+          <h4>Cara Kerja</h4>
+
+          <div class="rp-steps">
+            <div>
+              <b>1</b>
+              <strong>Kenali &amp; Pilah</strong>
+              <span>Pilih jenis sampah atau verifikasi dengan kamera AI.</span>
+            </div>
+
+            <div>
+              <b>2</b>
+              <strong>Cari Pengelola</strong>
+              <span>Temukan pengelola yang menerima jenis sampah Anda.</span>
+            </div>
+
+            <div>
+              <b>3</b>
+              <strong>Jemput / Antar</strong>
+              <span>Ajukan penjemputan dan pantau lewat kode batch.</span>
+            </div>
+
+            <div>
+              <b>4</b>
+              <strong>Olah Kembali</strong>
+              <span>Sampah didaur ulang menjadi produk bernilai.</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Fitur -->
+        <section class="rp-section">
+          <h4>Fitur ReLoop</h4>
+
+          <div class="rp-features">
+            <span>🗺️ Peta Pengelola</span>
+            <span>🚚 Jemput Sampah</span>
+            <span>🤖 Verifikasi Sampah AI</span>
+            <span>🔗 Kode Batch (Paspor Digital)</span>
+            <span>📚 Edukasi</span>
+            <span>🛍️ Pembelian Produk Daur Ulang</span>
+            <span>📊 Dashboard</span>
+            <span>🏭 Portal Pengelola</span>
+          </div>
+        </section>
+
+        <!-- Dampak -->
+        <section class="rp-section">
+          <h4>Dampak yang Dituju</h4>
+
+          <ul class="rp-list">
+            <li>Mengurangi sampah yang bocor ke lingkungan.</li>
+            <li>Mencegah pencemaran mikroplastik di tanah dan perairan.</li>
+            <li>Meningkatkan jumlah material yang benar-benar didaur ulang.</li>
+            <li>Mendukung bank sampah dan pelaku usaha produk daur ulang.</li>
+          </ul>
+        </section>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="secondary-button"
+            onclick="closeReloopProfile()"
+          >
+            Tutup
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            onclick="
+              closeReloopProfile();
+              showPage('pengelola');
+            "
+          >
+            Temukan Pengelola
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+
+    <footer>
+      <div class="footer-logo">ReLoop</div>
+
+      <p>Less Waste, More Life</p>
+
+      <p>Bersama menjaga bumi, dimulai dari langkah kecil.</p>
+    </footer>
+
+    <!-- Leaflet JS (peta interaktif) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+OPSIONAL - agar website 100% tidak mengunduh apa pun dari internet:
+
+1. Unduh file ini (klik kanan > Save as):
+   https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js
+2. Simpan dengan nama  tf.min.js  di folder ini (libs/).
+
+script.js otomatis mencoba libs/tf.min.js dulu. Jika file tidak ada,
+library diunduh dari CDN (hanya kode library, foto tidak ikut terkirim).

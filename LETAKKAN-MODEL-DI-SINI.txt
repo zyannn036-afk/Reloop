@@ -1,0 +1,12 @@
+Letakkan file model hasil export di folder ini:
+
+  model.json
+  metadata.json
+  weights.bin            (Teachable Machine)
+  atau group1-shard1of1.bin (dst.)   (skrip training Python)
+
+Nama file .bin boleh berbeda, tetapi harus sama dengan yang tertulis
+di dalam model.json dan berada di folder yang sama.
+
+Setelah file ada, hapus file petunjuk ini (boleh juga dibiarkan).
+Langkah lengkap: lihat PANDUAN-AI.md di folder utama.
