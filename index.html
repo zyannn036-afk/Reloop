@@ -52,26 +52,11 @@
 
         <button class="nav-button" data-page="pengelola">Pengelola</button>
 
-        <button class="nav-button" data-page="jemput">Jemput Sampah</button>
-
-        <button class="nav-button" data-page="edukasi">Edukasi</button>
+        <button class="nav-button" data-page="produksi">Produksi</button>
 
         <button class="nav-button" data-page="pembelian">Pembelian</button>
 
-        <button class="nav-button" data-page="produk">Produk</button>
-
         <button class="nav-button" data-page="dashboard">Dashboard</button>
-
-        <button
-          class="nav-button"
-          id="navPortalBtn"
-          data-page="portal-pengelola"
-          style="display: none"
-        >
-          Portal Pengelola
-        </button>
-
-        <button class="nav-button" data-page="pengaturan">Pengaturan</button>
       </nav>
 
       <button class="profile-button" onclick="handleProfileClick()">
@@ -116,6 +101,51 @@
         </div>
       </section>
 
+      <!-- PESAN UTAMA + ALUR SINGKAT -->
+
+      <section class="home-message">
+        <div class="home-message-heading">
+          <h2>Sampah yang Dipilah, Punya Harga.</h2>
+
+          <p>
+            Pilah sampah plastik dan organik dari rumah, ajukan penjemputan
+            lewat ReLoop, dan dapatkan nilainya kembali &mdash; sekaligus
+            memastikan sampah Anda diolah oleh pengelola yang tepat.
+          </p>
+        </div>
+
+        <div class="home-steps">
+          <div class="home-step">
+            <b>1</b>
+            <strong>Pilah</strong>
+            <span>Pisahkan sampah plastik dan organik dari rumah.</span>
+          </div>
+
+          <div class="home-step">
+            <b>2</b>
+            <strong>Ajukan Jemput</strong>
+            <span
+              >Ajukan penjemputan lewat ReLoop dan dapatkan kode batch.</span
+            >
+          </div>
+
+          <div class="home-step">
+            <b>3</b>
+            <strong>Ditimbang &amp; Dibayar</strong>
+            <span
+              >Pengelola menimbang sampah Anda dan membayar sesuai
+              beratnya.</span
+            >
+          </div>
+
+          <div class="home-step">
+            <b>4</b>
+            <strong>Diolah Jadi Produk</strong>
+            <span>Sampah diolah pihak Produksi menjadi produk bernilai.</span>
+          </div>
+        </div>
+      </section>
+
       <!-- MENU CEPAT -->
 
       <section class="quick-menu">
@@ -129,7 +159,7 @@
           <p>Temukan bank sampah dan pengelola terdekat</p>
         </button>
 
-        <button onclick="showPage('edukasi')">
+        <button onclick="goToEducation()">
           <div class="menu-image">
             <img src="edukasi.jpg" alt="Edukasi" />
           </div>
@@ -149,14 +179,14 @@
           <p>Dukung produk hasil daur ulang</p>
         </button>
 
-        <button onclick="showPage('produk')">
+        <button onclick="showPage('produksi')">
           <div class="menu-image">
             <img src="prod.jpg" alt="Produk" />
           </div>
 
-          <h3>Produk</h3>
+          <h3>Produksi</h3>
 
-          <p>Lihat hasil olahan dari sampah</p>
+          <p>Lihat alur sampah menjadi produk</p>
         </button>
       </section>
 
@@ -190,10 +220,6 @@
 
               <div class="tags">
                 <span>Plastik</span>
-                <span>Kertas</span>
-                <span>Logam</span>
-                <span>Kaca</span>
-                <span class="tag-general">Anorganik (Umum)</span>
               </div>
 
               <button onclick="showPage('pengelola')" class="primary-button">
@@ -212,30 +238,16 @@
             <h2>Pilih Jenis Sampah</h2>
 
             <p>
-              Cari pengelola berdasarkan jenis sampah. Plastik, Kertas, Logam,
-              Kaca, dan Elektronik otomatis dikenali sistem sebagai sampah
-              <strong>anorganik</strong>, sehingga hasil pencarian juga
-              menampilkan Bank Sampah sebagai pengelola umum anorganik.
+              Cari pengelola berdasarkan jenis sampah yang Anda miliki:
+              <strong>Plastik</strong> atau <strong>Organik</strong>.
             </p>
           </div>
         </div>
 
-        <div class="waste-grid">
-          <button onclick="selectWaste('Plastik')">Plastik</button>
-
-          <button onclick="selectWaste('Kertas')">Kertas</button>
-
-          <button onclick="selectWaste('Logam')">Logam</button>
-
-          <button onclick="selectWaste('Kaca')">Kaca</button>
-
+        <div class="waste-grid" id="wasteGrid">
           <button onclick="selectWaste('Organik')">Organik</button>
 
-          <button onclick="selectWaste('Elektronik')">Elektronik</button>
-
-          <button onclick="selectWaste('Bioplastik')">Bioplastik</button>
-
-          <button onclick="selectWaste('Lainnya')">Lainnya</button>
+          <button onclick="selectWaste('Plastik')">Plastik</button>
         </div>
       </section>
 
@@ -251,7 +263,7 @@
             lingkungan.
           </p>
 
-          <button onclick="showPage('edukasi')">Pelajari Lebih Lanjut →</button>
+          <button onclick="goToEducation()">Pelajari Lebih Lanjut →</button>
         </div>
 
         <div class="importance-list">
@@ -274,6 +286,141 @@
             <strong>Menjaga</strong>
             <span>Ekosistem</span>
           </div>
+        </div>
+      </section>
+
+      <!-- EDUKASI (dulunya halaman terpisah, kini bagian dari Home) -->
+
+      <section id="home-edukasi" class="education-section">
+        <h2>Edukasi Pengelolaan Sampah</h2>
+
+        <p>Pelajari langkah sederhana yang bisa dilakukan dari rumah.</p>
+
+        <div class="education-grid">
+          <article class="education-card">
+            <img
+              src="cara_mengelola_ssampah_plastik.jpg"
+              alt="Pengelolaan Plastik"
+            />
+
+            <div>
+              <span> Plastik </span>
+
+              <h3>Cara Mengelola Sampah Plastik</h3>
+
+              <p>
+                Pelajari cara memilah, membersihkan, dan menggunakan kembali
+                sampah plastik.
+              </p>
+
+              <button onclick="openEducation('plastik')">
+                Baca Selengkapnya →
+              </button>
+            </div>
+          </article>
+
+          <article class="education-card">
+            <img src="kompos_sampah.jpg" alt="Pengelolaan Organik" />
+
+            <div>
+              <span> Organik </span>
+
+              <h3>Cara Memilah Sampah Organik</h3>
+
+              <p>
+                Pisahkan sisa makanan dan sampah dapur dari sampah lain, lalu
+                olah menjadi kompos.
+              </p>
+
+              <button onclick="openEducation('kompos')">
+                Baca Selengkapnya →
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <!-- KODE DAUR ULANG PLASTIK 1-7 -->
+
+        <div class="recycle-code-section">
+          <h3>Kode Daur Ulang Plastik (1&ndash;7)</h3>
+
+          <p>
+            Cari simbol segitiga berisi angka di bagian bawah kemasan plastik.
+            Kenali artinya supaya Anda bisa memilih Kode Daur Ulang yang tepat
+            saat mengajukan penjemputan sampah Plastik.
+          </p>
+
+          <div class="recycle-code-grid">
+            <div class="recycle-code-card">
+              <span class="recycle-code-number">1</span>
+              <strong>PET</strong>
+              <small>Botol air mineral, botol minyak goreng</small>
+            </div>
+
+            <div class="recycle-code-card">
+              <span class="recycle-code-number">2</span>
+              <strong>HDPE</strong>
+              <small>Botol sampo, jerigen, galon air</small>
+            </div>
+
+            <div class="recycle-code-card">
+              <span class="recycle-code-number">3</span>
+              <strong>PVC</strong>
+              <small>Pipa, selang, plastik pembungkus</small>
+            </div>
+
+            <div class="recycle-code-card">
+              <span class="recycle-code-number">4</span>
+              <strong>LDPE</strong>
+              <small>Kantong plastik, plastik kemasan lentur</small>
+            </div>
+
+            <div class="recycle-code-card">
+              <span class="recycle-code-number">5</span>
+              <strong>PP</strong>
+              <small>Tutup botol, wadah makanan, sedotan</small>
+            </div>
+
+            <div class="recycle-code-card">
+              <span class="recycle-code-number">6</span>
+              <strong>PS</strong>
+              <small>Styrofoam, wadah makanan sekali pakai</small>
+            </div>
+
+            <div class="recycle-code-card">
+              <span class="recycle-code-number">7</span>
+              <strong>Lainnya</strong>
+              <small
+                >Campuran atau jenis plastik lain di luar kode 1&ndash;6</small
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="journal-section">
+          <h2>Jurnal & Artikel Lingkungan</h2>
+
+          <article>
+            <h3>Ekonomi Sirkular dan Masa Depan Pengelolaan Sampah</h3>
+
+            <p>
+              Artikel mengenai bagaimana sampah dapat kembali menjadi sumber
+              daya.
+            </p>
+
+            <button>Baca Artikel →</button>
+          </article>
+
+          <article>
+            <h3>Dampak Sampah Plastik terhadap Lingkungan</h3>
+
+            <p>
+              Memahami dampak penggunaan plastik dan pentingnya pengelolaan yang
+              tepat.
+            </p>
+
+            <button>Baca Artikel →</button>
+          </article>
         </div>
       </section>
 
@@ -316,11 +463,11 @@
           </div>
 
           <div class="product-card">
-            <img src="buku_daur_ulang.jpg" alt="Buku Daur Ulang" />
+            <img src="tumbler.jpg" alt="Botol Minum Daur Ulang" />
 
-            <h3>Buku Catatan Daur Ulang</h3>
+            <h3>Botol Minum Recycled Plastic</h3>
 
-            <p>Rp 35.000</p>
+            <p>Rp 65.000</p>
           </div>
         </div>
       </section>
@@ -352,12 +499,9 @@
           <p>Pilih jenis sampah yang ingin Anda cari pengelolanya.</p>
 
           <p class="category-hint">
-            Bank sampah umumnya menerima seluruh jenis limbah
-            <strong>anorganik</strong> (plastik, kertas, logam, kaca, dan
-            elektronik) dalam satu tempat yang sama. Sistem otomatis
-            mengelompokkan kelima jenis ini sebagai sampah anorganik, jadi saat
-            Anda memilih salah satunya, pengelola umum anorganik (Bank Sampah)
-            ikut ditampilkan sebagai salah satu hasilnya.
+            ReLoop saat ini berfokus pada dua kategori sampah:
+            <strong>Plastik</strong> dan <strong>Organik</strong>. Pilih salah
+            satu untuk menemukan pengelola yang menerimanya.
           </p>
 
           <input
@@ -366,22 +510,8 @@
             placeholder="Cari jenis sampah..."
           />
 
-          <div class="category-list">
+          <div class="category-list" id="categoryList">
             <button onclick="filterManager('Semua')">Semua Sampah</button>
-
-            <button onclick="filterManager('Plastik')">Plastik</button>
-
-            <button onclick="filterManager('Kertas')">Kertas</button>
-
-            <button onclick="filterManager('Logam')">Logam</button>
-
-            <button onclick="filterManager('Kaca')">Kaca</button>
-
-            <button onclick="filterManager('Organik')">Organik</button>
-
-            <button onclick="filterManager('Elektronik')">Elektronik</button>
-
-            <button onclick="filterManager('Bioplastik')">Bioplastik</button>
           </div>
 
           <div class="location-box">
@@ -476,7 +606,7 @@
 
             <article
               class="manager-result"
-              data-category="Plastik,Kertas,Logam,Kaca,Anorganik"
+              data-category="Plastik"
               data-lat="-7.995456"
               data-lng="112.619461"
               data-source="google"
@@ -503,10 +633,6 @@
               <div class="manager-services">
                 <div class="tags">
                   <span>Plastik</span>
-                  <span>Kertas</span>
-                  <span>Logam</span>
-                  <span>Kaca</span>
-                  <span class="tag-general">Anorganik (Umum)</span>
                 </div>
 
                 <p>
@@ -547,7 +673,7 @@
 
             <article
               class="manager-result"
-              data-category="Organik,Plastik,Kertas"
+              data-category="Organik,Plastik"
               data-lat="-7.9986344"
               data-lng="112.6053124"
               data-source="google"
@@ -576,7 +702,6 @@
                 <div class="tags">
                   <span>Organik</span>
                   <span>Plastik</span>
-                  <span>Kertas</span>
                 </div>
 
                 <p>Buka: Senin-Sabtu 07.00-15.00 WIB, Minggu Tutup</p>
@@ -608,7 +733,7 @@
 
             <article
               class="manager-result"
-              data-category="Organik,Plastik,Kertas"
+              data-category="Organik,Plastik"
               data-lat="-8.0161654"
               data-lng="112.6448084"
               data-source="google"
@@ -634,7 +759,6 @@
                 <div class="tags">
                   <span>Organik</span>
                   <span>Plastik</span>
-                  <span>Kertas</span>
                 </div>
 
                 <p>
@@ -669,7 +793,7 @@
 
             <article
               class="manager-result"
-              data-category="Organik,Plastik,Kertas,Logam"
+              data-category="Organik,Plastik"
               data-lat="-7.9213785"
               data-lng="112.5834081"
               data-source="google"
@@ -701,8 +825,6 @@
                 <div class="tags">
                   <span>Organik</span>
                   <span>Plastik</span>
-                  <span>Kertas</span>
-                  <span>Logam</span>
                 </div>
 
                 <p>Buka: Senin-Sabtu 06.30-17.00 WIB, Minggu Tutup</p>
@@ -747,7 +869,7 @@
 
             <article
               class="manager-result"
-              data-category="Organik,Lainnya"
+              data-category="Organik"
               data-lat="-7.9827377"
               data-lng="112.5779182"
               data-source="google"
@@ -775,7 +897,6 @@
               <div class="manager-services">
                 <div class="tags">
                   <span>Organik</span>
-                  <span>Lainnya</span>
                 </div>
 
                 <p>Buka: 24 Jam (Tempat Pemrosesan Akhir/TPA milik kota)</p>
@@ -807,7 +928,7 @@
 
             <article
               class="manager-result"
-              data-category="Plastik,Kertas,Logam,Kaca,Anorganik"
+              data-category="Plastik"
               data-lat="-7.9864553"
               data-lng="112.6437425"
               data-source="google"
@@ -838,10 +959,6 @@
               <div class="manager-services">
                 <div class="tags">
                   <span>Plastik</span>
-                  <span>Kertas</span>
-                  <span>Logam</span>
-                  <span>Kaca</span>
-                  <span class="tag-general">Anorganik (Umum)</span>
                 </div>
 
                 <p>Buka: Setiap Hari 07.00-17.00 WIB</p>
@@ -886,7 +1003,7 @@
 
             <article
               class="manager-result"
-              data-category="Plastik,Kertas,Logam,Kaca,Anorganik"
+              data-category="Plastik"
               data-lat="-8.0097524"
               data-lng="112.6482826"
               data-source="google"
@@ -914,10 +1031,6 @@
               <div class="manager-services">
                 <div class="tags">
                   <span>Plastik</span>
-                  <span>Kertas</span>
-                  <span>Logam</span>
-                  <span>Kaca</span>
-                  <span class="tag-general">Anorganik (Umum)</span>
                 </div>
 
                 <p>Buka: Senin-Jumat 09.00-16.00 WIB, Sabtu-Minggu Tutup</p>
@@ -966,7 +1079,7 @@
               sekitar lokasi Anda.
             </p>
 
-            <button onclick="showPage('edukasi')">
+            <button onclick="goToEducation()">
               Lihat Cara Pengelolaan Mandiri
             </button>
           </div>
@@ -1121,21 +1234,9 @@
             <fieldset class="reg-category-fieldset">
               <legend>Jenis Sampah yang Diterima</legend>
 
-              <div class="reg-checkbox-grid">
-                <label><input type="checkbox" value="Plastik" /> Plastik</label>
-                <label><input type="checkbox" value="Kertas" /> Kertas</label>
-                <label><input type="checkbox" value="Logam" /> Logam</label>
-                <label><input type="checkbox" value="Kaca" /> Kaca</label>
+              <div class="reg-checkbox-grid" id="regCategoryGrid">
                 <label><input type="checkbox" value="Organik" /> Organik</label>
-                <label
-                  ><input type="checkbox" value="Elektronik" />
-                  Elektronik</label
-                >
-                <label
-                  ><input type="checkbox" value="Bioplastik" />
-                  Bioplastik</label
-                >
-                <label><input type="checkbox" value="Lainnya" /> Lainnya</label>
+                <label><input type="checkbox" value="Plastik" /> Plastik</label>
               </div>
             </fieldset>
 
@@ -1201,11 +1302,8 @@
             <label>
               Kategori Produk
               <select id="prodKategori" required>
-                <option value="Plastik">Produk Plastik</option>
-                <option value="Kertas">Produk Kertas</option>
                 <option value="Organik">Produk Organik</option>
-                <option value="Kain">Produk Kain</option>
-                <option value="Logam & Kaca">Produk Logam & Kaca</option>
+                <option value="Plastik">Produk Plastik</option>
               </select>
             </label>
 
@@ -1270,13 +1368,7 @@
           </form>
         </div>
       </div>
-    </main>
 
-    <!-- =====================================================
-         JEMPUT SAMPAH (PENGAJUAN, PASPOR DIGITAL & VERIFIKASI)
-    ====================================================== -->
-
-    <main id="jemput" class="page">
       <section
         class="page-hero"
         style="background-image: url(&quot;images/background1.png&quot;)"
@@ -1358,15 +1450,13 @@
           <form id="jemputForm" onsubmit="handleJemputSubmit(event)">
             <label>
               Jenis Sampah
-              <select id="jemputJenis" required>
-                <option value="Plastik">Plastik</option>
-                <option value="Kertas">Kertas</option>
-                <option value="Logam">Logam</option>
-                <option value="Kaca">Kaca</option>
+              <select
+                id="jemputJenis"
+                required
+                onchange="updateJemputKodeDaurVisibility()"
+              >
                 <option value="Organik">Organik</option>
-                <option value="Elektronik">Elektronik</option>
-                <option value="Bioplastik">Bioplastik</option>
-                <option value="Lainnya">Lainnya</option>
+                <option value="Plastik">Plastik</option>
               </select>
             </label>
 
@@ -1398,37 +1488,29 @@
               />
             </label>
 
-            <!-- VERIFIKASI KAMERA -->
-            <div class="camera-verification-box">
-              <div>
-                <strong>Verifikasi Sampah dengan Kamera (Wajib)</strong>
-                <p>
-                  Foto sampah Anda untuk tahap verifikasi visual. AI mengenali
-                  Organik, Plastik, Kaca, Kertas, dan Anorganik lainnya. Foto
-                  dianalisis di perangkat Anda dan tidak dikirim ke server.
-                  <strong
-                    >Hasil deteksi AI harus sesuai dengan "Jenis Sampah" yang
-                    Anda pilih di atas</strong
-                  >, kalau tidak sesuai pengajuan akan ditolak.
-                </p>
-              </div>
+            <!-- KODE DAUR ULANG: hanya relevan & wajib untuk sub-jenis
+                 Plastik. Disembunyikan/dilepas wajibnya lewat
+                 updateJemputKodeDaurVisibility() saat Jenis Sampah =
+                 Organik (lihat script.js). -->
+            <label id="jemputKodeDaurWrap">
+              Kode Daur Ulang
+              <select id="jemputKodeDaur" required>
+                <option value="">Pilih kode daur ulang...</option>
+                <option value="1">1 - PET</option>
+                <option value="2">2 - HDPE</option>
+                <option value="3">3 - PVC</option>
+                <option value="4">4 - LDPE</option>
+                <option value="5">5 - PP</option>
+                <option value="6">6 - PS</option>
+                <option value="7">7 - Lainnya</option>
+              </select>
+            </label>
 
-              <button
-                type="button"
-                class="secondary-button camera-open-button"
-                onclick="openWasteCamera()"
-              >
-                📷 Buka Kamera
-              </button>
-
-              <div id="cameraResult" class="camera-result" hidden>
-                <span id="cameraStatusIcon">✓</span>
-                <div>
-                  <strong id="cameraResultTitle">Belum ada verifikasi</strong>
-                  <p id="cameraResultText">Kamera belum digunakan.</p>
-                </div>
-              </div>
-            </div>
+            <p class="category-hint">
+              Kode Daur Ulang hanya berlaku untuk sampah Plastik, dan untuk saat
+              ini dipilih secara manual. Deteksi otomatis lewat AI akan tersedia
+              pada versi mendatang.
+            </p>
 
             <button type="submit" class="primary-button">
               Ajukan Penjemputan
@@ -1451,8 +1533,8 @@
             <strong>Masih Dalam Proses</strong> (baru dideklarasikan, belum
             dicocokkan pengelola) dan <strong>Sudah Diserahkan</strong>
             (berat/jenisnya sudah dicocokkan &amp; diterima langsung oleh
-            pengelola). Foto verifikasi setiap pengajuan ikut tersimpan di
-            riwayat ini.
+            pengelola). Kode Daur Ulang yang dipilih setiap pengajuan ikut
+            ditampilkan di riwayat ini.
           </p>
 
           <div id="riwayatBatchList">
@@ -1545,117 +1627,6 @@
     </main>
 
     <!-- =====================================================
-         EDUKASI
-    ====================================================== -->
-
-    <main id="edukasi" class="page">
-      <section
-        class="page-hero"
-        style="background-image: url(&quot;images/background1.png&quot;)"
-      >
-        <div>
-          <h1>Edukasi Pengelolaan Sampah</h1>
-
-          <p>
-            Pelajari cara mengelola limbah secara mandiri dan memahami isu
-            lingkungan.
-          </p>
-        </div>
-      </section>
-
-      <section class="education-section">
-        <h2>Pengelolaan Limbah Mandiri</h2>
-
-        <p>Pelajari langkah sederhana yang bisa dilakukan dari rumah.</p>
-
-        <div class="education-grid">
-          <article class="education-card">
-            <img
-              src="cara_mengelola_ssampah_plastik.jpg"
-              alt="Pengelolaan Plastik"
-            />
-
-            <div>
-              <span> Plastik </span>
-
-              <h3>Cara Mengelola Sampah Plastik</h3>
-
-              <p>
-                Pelajari cara memilah, membersihkan, dan menggunakan kembali
-                sampah plastik.
-              </p>
-
-              <button onclick="openEducation('plastik')">
-                Baca Selengkapnya →
-              </button>
-            </div>
-          </article>
-
-          <article class="education-card">
-            <img src="kompos_sampah.jpg" alt="Pengelolaan Organik" />
-
-            <div>
-              <span> Organik </span>
-
-              <h3>Membuat Kompos di Rumah</h3>
-
-              <p>Ubah sisa makanan dan daun menjadi kompos.</p>
-
-              <button onclick="openEducation('kompos')">
-                Baca Selengkapnya →
-              </button>
-            </div>
-          </article>
-
-          <article class="education-card">
-            <img src="mengelola_kertas.jpg" alt="Pengelolaan Kertas" />
-
-            <div>
-              <span> Kertas </span>
-
-              <h3>Mengolah Sampah Kertas</h3>
-
-              <p>
-                Pelajari cara menggunakan kembali kertas yang sudah tidak
-                digunakan.
-              </p>
-
-              <button onclick="openEducation('kertas')">
-                Baca Selengkapnya →
-              </button>
-            </div>
-          </article>
-        </div>
-
-        <div class="journal-section">
-          <h2>Jurnal & Artikel Lingkungan</h2>
-
-          <article>
-            <h3>Ekonomi Sirkular dan Masa Depan Pengelolaan Sampah</h3>
-
-            <p>
-              Artikel mengenai bagaimana sampah dapat kembali menjadi sumber
-              daya.
-            </p>
-
-            <button>Baca Artikel →</button>
-          </article>
-
-          <article>
-            <h3>Dampak Sampah Plastik terhadap Lingkungan</h3>
-
-            <p>
-              Memahami dampak penggunaan plastik dan pentingnya pengelolaan yang
-              tepat.
-            </p>
-
-            <button>Baca Artikel →</button>
-          </article>
-        </div>
-      </section>
-    </main>
-
-    <!-- =====================================================
          PEMBELIAN
     ====================================================== -->
 
@@ -1676,22 +1647,10 @@
 
       <section class="shopping-section">
         <div class="shopping-layout">
-          <aside class="shopping-filter">
+          <aside class="shopping-filter" id="productCategoryFilter">
             <h2>Kategori Produk</h2>
 
             <button onclick="filterProduct('Semua')">Semua Produk</button>
-
-            <button onclick="filterProduct('Plastik')">Produk Plastik</button>
-
-            <button onclick="filterProduct('Kertas')">Produk Kertas</button>
-
-            <button onclick="filterProduct('Organik')">Produk Organik</button>
-
-            <button onclick="filterProduct('Kain')">Produk Kain</button>
-
-            <button onclick="filterProduct('Logam & Kaca')">
-              Produk Logam & Kaca
-            </button>
           </aside>
 
           <div class="shopping-products">
@@ -1712,22 +1671,6 @@
                 <strong> Rp 75.000 </strong>
 
                 <button onclick="buyProduct('Tas Tote Daur Ulang Plastik')">
-                  Beli Produk
-                </button>
-              </article>
-
-              <article class="shop-product" data-category="Kertas">
-                <img src="buku_daur_ulang.jpg" alt="Buku" />
-
-                <span> Dari Kertas </span>
-
-                <h3>Buku Catatan Kertas Daur Ulang</h3>
-
-                <p>Material: Kertas Bekas</p>
-
-                <strong> Rp 35.000 </strong>
-
-                <button onclick="buyProduct('Buku Catatan Kertas Daur Ulang')">
                   Beli Produk
                 </button>
               </article>
@@ -1780,93 +1723,183 @@
     </main>
 
     <!-- =====================================================
-         PRODUK
+         PRODUKSI
+         Halaman baru: menjelaskan alur bagaimana sampah yang
+         terverifikasi diolah oleh pihak Produksi menjadi produk.
+         KONTEN LENGKAP AKAN DIISI PADA TAHAP BERIKUTNYA (prompt 2).
     ====================================================== -->
 
-    <main id="produk" class="page">
+    <main id="produksi" class="page">
       <section
         class="page-hero"
         style="background-image: url(&quot;images/background1.png&quot;)"
       >
         <div>
-          <h1>Produk Hasil Olahan Limbah</h1>
+          <h1>Produksi</h1>
 
           <p>
-            Lihat berbagai produk yang dapat dibuat dari limbah dan pelajari
-            cara pembuatannya.
+            Alur bagaimana sampah yang terverifikasi diolah pihak Produksi
+            menjadi produk siap pakai.
           </p>
         </div>
       </section>
 
-      <section class="product-learning">
-        <div class="product-intro">
-          <h2>Dari Limbah Menjadi Produk</h2>
+      <!-- ALUR PRODUKSI -->
 
-          <p>
-            Temukan berbagai ide pemanfaatan limbah yang bisa dilakukan secara
-            mandiri.
-          </p>
-        </div>
-
-        <div class="product-learning-grid">
-          <article>
-            <img src="tas_daur_ulang.png" alt="Tas Plastik" />
-
-            <h3>Tas dari Plastik Bekas</h3>
-
-            <p>
-              Tingkat kesulitan:
-              <strong>Mudah</strong>
-            </p>
-
-            <button onclick="makeProduct('Tas dari Plastik Bekas')">
-              Cara Membuat →
-            </button>
-          </article>
-
-          <article>
-            <img src="pot_tanaman.jpg" alt="Pot Tanaman" />
-
-            <h3>Pot Tanaman dari Botol</h3>
-
-            <p>
-              Tingkat kesulitan:
-              <strong>Mudah</strong>
-            </p>
-
-            <button onclick="makeProduct('Pot Tanaman dari Botol')">
-              Cara Membuat →
-            </button>
-          </article>
-
-          <article>
-            <img src="kompos_sampah.jpg" alt="Kompos" />
-
-            <h3>Kompos dari Sampah Organik</h3>
-
-            <p>
-              Tingkat kesulitan:
-              <strong>Mudah</strong>
-            </p>
-
-            <button onclick="makeProduct('Kompos dari Sampah Organik')">
-              Cara Membuat →
-            </button>
-          </article>
-        </div>
-
-        <div class="self-making">
-          <h2>Buat Sendiri di Rumah</h2>
-
-          <p>Pilih tingkat kesulitan sesuai kemampuan Anda.</p>
-
+      <section class="dashboard-section production-flow-section">
+        <div class="section-title">
           <div>
-            <button>Mudah</button>
+            <h2>Alur Produksi</h2>
 
-            <button>Menengah</button>
-
-            <button>Sulit</button>
+            <p>
+              Perjalanan sampah dari rumah tangga hingga menjadi produk siap
+              pakai.
+            </p>
           </div>
+        </div>
+
+        <div class="production-flow">
+          <div class="production-step">
+            <div class="production-step-image">
+              <img src="rumah_alur.png" alt="Rumah Tangga" />
+              <span class="production-step-number">1</span>
+            </div>
+
+            <h3>Rumah Tangga</h3>
+
+            <p>
+              Sampah plastik dan organik dipilah langsung dari rumah oleh
+              masyarakat sebelum dijemput atau disetorkan.
+            </p>
+          </div>
+
+          <span class="production-arrow" aria-hidden="true">→</span>
+
+          <div class="production-step">
+            <div class="production-step-image">
+              <img src="bank sampah_alur.png" alt="Bank Sampah" />
+              <span class="production-step-number">2</span>
+            </div>
+
+            <h3>Bank Sampah</h3>
+
+            <p>
+              Sampah terpilah diterima bank sampah, lalu ditimbang, dicatat, dan
+              diberi kode batch untuk dilacak.
+            </p>
+          </div>
+
+          <span class="production-arrow" aria-hidden="true">→</span>
+
+          <div class="production-step">
+            <div class="production-step-image">
+              <img src="produksi_alur.png" alt="Pihak Produksi" />
+              <span class="production-step-number">3</span>
+            </div>
+
+            <h3>Pihak Produksi</h3>
+
+            <p>
+              Bank sampah menyalurkan sampah terpilah ke mitra Produksi untuk
+              diolah lebih lanjut menjadi bahan baku.
+            </p>
+          </div>
+
+          <span class="production-arrow" aria-hidden="true">→</span>
+
+          <div class="production-step">
+            <div class="production-step-image">
+              <img src="produk jadi.png" alt="Produk Jadi" />
+              <span class="production-step-number">4</span>
+            </div>
+
+            <h3>Menjadi Produk</h3>
+
+            <p>
+              Bahan baku diolah menjadi produk bernilai jual dan siap digunakan
+              kembali oleh masyarakat.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUK TERSEDIA -->
+
+      <section class="dashboard-section production-product-section">
+        <div class="section-title">
+          <div>
+            <h2>Produk Tersedia</h2>
+
+            <p>
+              Beberapa hasil olahan pihak Produksi. Pilih salah satu untuk
+              melihat detail dan produk lain di halaman Pembelian.
+            </p>
+          </div>
+
+          <button onclick="showPage('pembelian')">Lihat Semua →</button>
+        </div>
+
+        <div class="product-grid large production-product-grid">
+          <article class="shop-product">
+            <img src="tas_ekonomi.jpg" alt="Tas Tote" />
+
+            <span> Dari Plastik </span>
+
+            <h3>Tas Tote Daur Ulang Plastik</h3>
+
+            <p>Material: Plastik PET</p>
+
+            <strong> Rp 75.000 </strong>
+
+            <button
+              onclick="
+                viewProductInPembelian('Tas Tote Daur Ulang Plastik', 'Plastik')
+              "
+            >
+              Lihat di Pembelian
+            </button>
+          </article>
+
+          <article class="shop-product">
+            <img src="pot_kompos.jpeg" alt="Pot Kompos" />
+
+            <span> Dari Organik </span>
+
+            <h3>Pot Kompos Organik</h3>
+
+            <p>Material: Kompos Organik</p>
+
+            <strong> Rp 30.000 </strong>
+
+            <button
+              onclick="viewProductInPembelian('Pot Kompos Organik', 'Organik')"
+            >
+              Lihat di Pembelian
+            </button>
+          </article>
+
+          <article class="shop-product">
+            <img src="tumbler.jpg" alt="Botol" />
+
+            <span> Dari Plastik </span>
+
+            <h3>Botol Minum Recycled Plastic</h3>
+
+            <p>Material: Plastik HDPE</p>
+
+            <strong> Rp 65.000 </strong>
+
+            <button
+              onclick="
+                viewProductInPembelian(
+                  'Botol Minum Recycled Plastic',
+                  'Plastik',
+                )
+              "
+            >
+              Lihat di Pembelian
+            </button>
+          </article>
         </div>
       </section>
     </main>
@@ -2519,175 +2552,6 @@
       </div>
     </main>
 
-    <!-- MODAL KAMERA VERIFIKASI SAMPAH
-         Logika kamera + AI ada di script.js (bagian "AI DETEKSI SAMPAH").
-         Tiap tahap (kamera -> foto -> hasil) hanya menampilkan
-         tombol yang relevan. -->
-    <div id="wasteCameraModal" class="modal-overlay">
-      <div class="modal-box camera-modal-box">
-        <div class="modal-header">
-          <h2>Verifikasi Sampah</h2>
-          <button
-            type="button"
-            class="modal-close"
-            onclick="closeWasteCamera()"
-          >
-            ×
-          </button>
-        </div>
-
-        <p class="modal-subtitle" id="cameraSubtitle">
-          Arahkan kamera ke sampah yang ingin Anda ajukan.
-        </p>
-
-        <!-- Preview kamera (video) atau foto hasil jepretan (canvas) -->
-        <div class="camera-preview-wrap">
-          <video id="wasteCameraVideo" autoplay playsinline muted></video>
-          <canvas id="wasteCameraCanvas" hidden></canvas>
-
-          <!-- Tampilan saat AI sedang menganalisis -->
-          <div id="cameraLoading" class="camera-loading" hidden>
-            <div class="camera-spinner"></div>
-            <span>AI sedang menganalisis...</span>
-          </div>
-        </div>
-
-        <p id="cameraError" class="camera-error" role="alert" hidden></p>
-
-        <!-- Tombol tahap 1: kamera aktif -->
-        <div id="cameraStepLive" class="camera-controls">
-          <button
-            type="button"
-            id="cameraCaptureBtn"
-            class="primary-button"
-            onclick="captureWastePhoto()"
-          >
-            📸 Ambil Foto
-          </button>
-          <!-- Tombol ganti kamera depan/belakang (khusus perangkat
-               yang punya lebih dari satu kamera, mis. HP) -->
-          <button
-            type="button"
-            id="cameraSwitchBtn"
-            class="secondary-button"
-            onclick="switchWasteCamera()"
-            hidden
-          >
-            🔄 Kamera Depan
-          </button>
-          <button
-            type="button"
-            class="secondary-button"
-            onclick="openWasteGallery()"
-          >
-            🖼️ Pilih dari Galeri
-          </button>
-          <button
-            type="button"
-            class="secondary-button"
-            onclick="closeWasteCamera()"
-          >
-            Tutup
-          </button>
-        </div>
-
-        <!-- Tombol tahap 2: foto sudah diambil -->
-        <div id="cameraStepCaptured" class="camera-controls" hidden>
-          <button
-            type="button"
-            id="cameraRetakeBtn"
-            class="secondary-button"
-            onclick="retakeWastePhoto()"
-          >
-            🔄 Ulangi Foto
-          </button>
-          <button
-            type="button"
-            id="cameraAnalyzeBtn"
-            class="primary-button"
-            onclick="analyzeWastePhoto()"
-          >
-            🔍 Analisis
-          </button>
-        </div>
-
-        <!-- Tombol tahap 3: hasil tampil -->
-        <div id="cameraStepResult" class="camera-controls" hidden>
-          <button
-            type="button"
-            class="secondary-button"
-            onclick="retakeWastePhoto()"
-          >
-            🔄 Foto Lagi
-          </button>
-          <button
-            type="button"
-            class="primary-button"
-            onclick="closeWasteCamera()"
-          >
-            Selesai
-          </button>
-        </div>
-
-        <!-- Input file tersembunyi untuk "Pilih dari Galeri" -->
-        <input
-          type="file"
-          id="wasteCameraFile"
-          accept="image/*"
-          hidden
-          onchange="handleWasteGalleryPick(event)"
-        />
-
-        <!-- Hasil klasifikasi AI -->
-        <div id="cameraAiResult" class="ai-result" hidden>
-          <p class="ai-result-caption">Sampah terdeteksi</p>
-
-          <div class="ai-result-main">
-            <span class="ai-result-emoji" id="aiResultEmoji">♻️</span>
-
-            <div class="ai-result-name">
-              <strong class="ai-result-label" id="aiResultLabel"
-                >PLASTIK</strong
-              >
-              <span class="ai-result-english" id="aiResultEnglish"
-                >Plastic</span
-              >
-            </div>
-
-            <div class="ai-result-confidence">
-              <small>Confidence</small>
-              <strong id="aiResultConfidence">0%</strong>
-            </div>
-          </div>
-
-          <div class="ai-confidence-bar">
-            <div id="aiConfidenceFill"></div>
-          </div>
-
-          <p id="aiLowConfidenceNote" class="ai-warning" hidden>
-            AI kurang yakin dengan hasil ini. Coba foto ulang dengan cahaya
-            lebih terang, satu objek saja, dan latar yang polos.
-          </p>
-
-          <div class="ai-disposal">
-            <small>Rekomendasi pembuangan</small>
-            <strong id="aiDisposalTitle"></strong>
-            <p id="aiDisposalText"></p>
-          </div>
-
-          <details class="ai-scores">
-            <summary>Lihat skor semua kategori</summary>
-            <ul id="aiScoreList" class="ai-score-list"></ul>
-          </details>
-
-          <p class="ai-privacy-note">
-            🔒 Foto dianalisis langsung di browser Anda dan tidak dikirim ke
-            server atau API mana pun.
-          </p>
-        </div>
-      </div>
-    </div>
-
     <!-- MODAL: RUTE PENJEMPUTAN (dipakai pengguna & pengelola) -->
     <div id="routeModal" class="modal-overlay">
       <div class="modal-box">
@@ -2994,6 +2858,9 @@
 
     <!-- Leaflet JS (peta interaktif) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Titik sambung AI baru (placeholder, lihat ai-slot.js) -->
+    <script src="ai-slot.js"></script>
 
     <script src="script.js"></script>
   </body>
