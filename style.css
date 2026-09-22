@@ -766,6 +766,10 @@ img {
   gap: 20px;
 }
 
+.manager-page > div {
+  min-width: 0;
+}
+
 .filter-sidebar {
   background: white;
 
@@ -1284,115 +1288,6 @@ img {
   border-radius: 10px;
 }
 
-/* -----------------------------------------
-   HASIL PENCARIAN: SLIDER HORIZONTAL
-   -----------------------------------------
-   #managerList di-scroll ke samping (bukan ditumpuk
-   ke bawah). Setiap .manager-result jadi kartu dengan
-   lebar tetap yang berjejer, bisa digeser lewat drag,
-   scroll, atau tombol panah di .manager-list-wrapper.
------------------------------------------ */
-
-.manager-list-wrapper {
-  position: relative;
-}
-
-#managerList {
-  display: flex;
-
-  gap: 16px;
-
-  overflow-x: auto;
-
-  scroll-behavior: smooth;
-
-  scroll-snap-type: x proximity;
-
-  padding: 4px 4px 16px;
-
-  margin: 0 -4px;
-
-  scrollbar-width: thin;
-
-  scrollbar-color: #087153 #e5f2ed;
-}
-
-#managerList::-webkit-scrollbar {
-  height: 8px;
-}
-
-#managerList::-webkit-scrollbar-track {
-  background: #e5f2ed;
-
-  border-radius: 10px;
-}
-
-#managerList::-webkit-scrollbar-thumb {
-  background: #087153;
-
-  border-radius: 10px;
-}
-
-.manager-slide-btn {
-  position: absolute;
-
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  width: 40px;
-
-  height: 40px;
-
-  border-radius: 50%;
-
-  border: 1px solid #dfebe6;
-
-  background: white;
-
-  color: #087153;
-
-  font-size: 20px;
-
-  line-height: 1;
-
-  cursor: pointer;
-
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  z-index: 2;
-}
-
-.manager-slide-btn:hover {
-  background: #087153;
-
-  color: white;
-}
-
-.manager-slide-btn:disabled {
-  opacity: 0.35;
-
-  cursor: default;
-
-  background: white;
-
-  color: #087153;
-}
-
-.manager-slide-btn--prev {
-  left: -14px;
-}
-
-.manager-slide-btn--next {
-  right: -14px;
-}
-
 .manager-result {
   background: white;
 
@@ -1402,37 +1297,21 @@ img {
 
   padding: 12px;
 
-  display: flex;
+  margin-bottom: 12px;
 
-  flex-direction: column;
+  display: grid;
 
-  gap: 10px;
+  grid-template-columns: 130px 1.4fr 1fr 150px;
 
-  flex: 0 0 280px;
+  gap: 15px;
 
-  width: 280px;
-
-  scroll-snap-align: start;
+  align-items: center;
 }
 
 .manager-result > img {
-  width: 100%;
-
-  height: 150px;
+  height: 115px;
 
   border-radius: 12px;
-
-  object-fit: cover;
-}
-
-.manager-info,
-.manager-services,
-.manager-actions {
-  width: 100%;
-}
-
-.manager-actions {
-  margin-top: auto;
 }
 
 .distance {
@@ -1466,6 +1345,148 @@ img {
   flex-direction: column;
 
   gap: 8px;
+}
+
+/* =========================================
+   SLIDE / CAROUSEL HASIL PENCARIAN
+   -----------------------------------------
+   Daftar bank sampah ditampilkan satu kartu per "slide" yang bisa
+   digeser pakai tombol ‹ › atau swipe, supaya tidak memakan banyak
+   ruang scroll vertikal — terutama penting di layar sempit
+   (HP/Android), tapi aktif di semua ukuran layar.
+========================================= */
+.manager-carousel {
+  position: relative;
+
+  min-width: 0;
+}
+
+#managerList {
+  display: flex;
+
+  overflow-x: auto;
+
+  scroll-snap-type: x mandatory;
+
+  scroll-behavior: smooth;
+
+  -webkit-overflow-scrolling: touch;
+
+  gap: 14px;
+
+  scrollbar-width: none;
+
+  padding: 2px 2px 6px;
+
+  min-width: 0;
+}
+
+#managerList::-webkit-scrollbar {
+  display: none;
+}
+
+#managerList .manager-result {
+  flex: 0 0 100%;
+
+  scroll-snap-align: start;
+
+  margin-bottom: 0;
+
+  min-width: 0;
+}
+
+.carousel-nav {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  position: absolute;
+
+  top: 40%;
+
+  transform: translateY(-50%);
+
+  width: 36px;
+
+  height: 36px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: rgba(8, 113, 83, 0.9);
+
+  color: #fff;
+
+  font-size: 20px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  z-index: 5;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-nav--prev {
+  left: -6px;
+}
+
+.carousel-nav--next {
+  right: -6px;
+}
+
+.carousel-nav:disabled {
+  opacity: 0.35;
+
+  cursor: default;
+}
+
+.manager-carousel-dots {
+  display: flex;
+
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin: 10px 0 16px;
+}
+
+.manager-carousel-dots span {
+  width: 6px;
+
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #d7e3df;
+
+  transition:
+    background 0.2s,
+    width 0.2s;
+}
+
+.manager-carousel-dots span.active {
+  background: #087153;
+
+  width: 16px;
+
+  border-radius: 4px;
+}
+
+@media (max-width: 700px) {
+  .carousel-nav--prev {
+    left: 2px;
+  }
+
+  .carousel-nav--next {
+    right: 2px;
+  }
 }
 
 .not-available {
@@ -2467,9 +2488,12 @@ footer p {
   }
 
   .manager-result {
-    flex: 0 0 240px;
+    grid-template-columns: 100px 1fr;
+  }
 
-    width: 240px;
+  .manager-services,
+  .manager-actions {
+    grid-column: 2;
   }
 }
 
@@ -2541,25 +2565,12 @@ footer p {
   }
 
   .manager-result {
-    flex: 0 0 82vw;
-
-    width: 82vw;
+    grid-template-columns: 1fr;
   }
 
-  .manager-slide-btn {
-    width: 34px;
-
-    height: 34px;
-
-    font-size: 17px;
-  }
-
-  .manager-slide-btn--prev {
-    left: -8px;
-  }
-
-  .manager-slide-btn--next {
-    right: -8px;
+  .manager-services,
+  .manager-actions {
+    grid-column: auto;
   }
 
   .product-grid.large {
