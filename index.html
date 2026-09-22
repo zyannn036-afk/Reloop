@@ -424,53 +424,6 @@
         </div>
       </section>
 
-      <!-- PRODUK HOME -->
-
-      <section class="home-section">
-        <div class="section-title">
-          <div>
-            <h2>Produk Unggulan</h2>
-
-            <p>Dari sampah menjadi produk bernilai.</p>
-          </div>
-
-          <button onclick="showPage('pembelian')">Lihat Semua Produk →</button>
-        </div>
-
-        <div class="product-grid">
-          <div class="product-card">
-            <img src="tas_daur_ulang.png" alt="Tas Daur Ulang" />
-
-            <h3>Tas Daur Ulang Plastik</h3>
-
-            <p>Rp 75.000</p>
-          </div>
-
-          <div class="product-card">
-            <img src="pot_tanaman.jpg" alt="Pot Tanaman" />
-
-            <h3>Pot Tanaman Daur Ulang</h3>
-
-            <p>Rp 45.000</p>
-          </div>
-
-          <div class="product-card">
-            <img src="kompos_sampah.jpg" alt="Pupuk Kompos" />
-
-            <h3>Pupuk Kompos Organik</h3>
-
-            <p>Rp 30.000</p>
-          </div>
-
-          <div class="product-card">
-            <img src="tumbler.jpg" alt="Botol Minum Daur Ulang" />
-
-            <h3>Botol Minum Recycled Plastic</h3>
-
-            <p>Rp 65.000</p>
-          </div>
-        </div>
-      </section>
     </main>
 
     <!-- =====================================================
@@ -594,7 +547,18 @@
             </select>
           </div>
 
-          <div id="managerList">
+          <div class="manager-list-wrapper">
+            <button
+              type="button"
+              class="manager-slide-btn manager-slide-btn--prev"
+              id="managerPrevBtn"
+              aria-label="Geser ke kiri"
+              onclick="slideManagerList(-1)"
+            >
+              ‹
+            </button>
+
+            <div id="managerList">
             <!-- Data lokasi di bawah ini diambil dari Google Maps (pencarian
                  "bank sampah Malang", "TPS 3R Kota Malang", "TPA Supit Urang
                  Malang", dan "pusat daur ulang sampah Malang"). Kategori
@@ -1067,6 +1031,17 @@
                 </button>
               </div>
             </article>
+            </div>
+
+            <button
+              type="button"
+              class="manager-slide-btn manager-slide-btn--next"
+              id="managerNextBtn"
+              aria-label="Geser ke kanan"
+              onclick="slideManagerList(1)"
+            >
+              ›
+            </button>
           </div>
 
           <!-- TIDAK TERSEDIA -->
@@ -1744,7 +1719,7 @@
         </div>
       </section>
 
-      <!-- ALUR PRODUKSI -->
+      <!-- ALUR PRODUKSI (SLIDER) -->
 
       <section class="dashboard-section production-flow-section">
         <div class="section-title">
@@ -1753,153 +1728,217 @@
 
             <p>
               Perjalanan sampah dari rumah tangga hingga menjadi produk siap
-              pakai.
+              pakai. Geser untuk melihat penjelasan tiap tahap.
             </p>
           </div>
         </div>
 
-        <div class="production-flow">
-          <div class="production-step">
-            <div class="production-step-image">
-              <img src="rumah_alur.png" alt="Rumah Tangga" />
-              <span class="production-step-number">1</span>
-            </div>
+        <!-- Tab nomor tahap -->
+        <div class="production-tabs" id="productionTabs" role="tablist">
+          <button
+            type="button"
+            class="production-tab active"
+            data-index="0"
+            onclick="goToProductionSlide(0)"
+            role="tab"
+            aria-selected="true"
+          >
+            <span class="production-tab-number">1</span>
+            <span class="production-tab-label">Rumah Tangga</span>
+          </button>
 
-            <h3>Rumah Tangga</h3>
+          <span class="production-tab-line" aria-hidden="true"></span>
 
-            <p>
-              Sampah plastik dan organik dipilah langsung dari rumah oleh
-              masyarakat sebelum dijemput atau disetorkan.
-            </p>
-          </div>
+          <button
+            type="button"
+            class="production-tab"
+            data-index="1"
+            onclick="goToProductionSlide(1)"
+            role="tab"
+            aria-selected="false"
+          >
+            <span class="production-tab-number">2</span>
+            <span class="production-tab-label">Bank Sampah</span>
+          </button>
 
-          <span class="production-arrow" aria-hidden="true">→</span>
+          <span class="production-tab-line" aria-hidden="true"></span>
 
-          <div class="production-step">
-            <div class="production-step-image">
-              <img src="bank sampah_alur.png" alt="Bank Sampah" />
-              <span class="production-step-number">2</span>
-            </div>
+          <button
+            type="button"
+            class="production-tab"
+            data-index="2"
+            onclick="goToProductionSlide(2)"
+            role="tab"
+            aria-selected="false"
+          >
+            <span class="production-tab-number">3</span>
+            <span class="production-tab-label">Pihak Produksi</span>
+          </button>
 
-            <h3>Bank Sampah</h3>
+          <span class="production-tab-line" aria-hidden="true"></span>
 
-            <p>
-              Sampah terpilah diterima bank sampah, lalu ditimbang, dicatat, dan
-              diberi kode batch untuk dilacak.
-            </p>
-          </div>
-
-          <span class="production-arrow" aria-hidden="true">→</span>
-
-          <div class="production-step">
-            <div class="production-step-image">
-              <img src="produksi_alur.png" alt="Pihak Produksi" />
-              <span class="production-step-number">3</span>
-            </div>
-
-            <h3>Pihak Produksi</h3>
-
-            <p>
-              Bank sampah menyalurkan sampah terpilah ke mitra Produksi untuk
-              diolah lebih lanjut menjadi bahan baku.
-            </p>
-          </div>
-
-          <span class="production-arrow" aria-hidden="true">→</span>
-
-          <div class="production-step">
-            <div class="production-step-image">
-              <img src="produk jadi.png" alt="Produk Jadi" />
-              <span class="production-step-number">4</span>
-            </div>
-
-            <h3>Menjadi Produk</h3>
-
-            <p>
-              Bahan baku diolah menjadi produk bernilai jual dan siap digunakan
-              kembali oleh masyarakat.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- PRODUK TERSEDIA -->
-
-      <section class="dashboard-section production-product-section">
-        <div class="section-title">
-          <div>
-            <h2>Produk Tersedia</h2>
-
-            <p>
-              Beberapa hasil olahan pihak Produksi. Pilih salah satu untuk
-              melihat detail dan produk lain di halaman Pembelian.
-            </p>
-          </div>
-
-          <button onclick="showPage('pembelian')">Lihat Semua →</button>
+          <button
+            type="button"
+            class="production-tab"
+            data-index="3"
+            onclick="goToProductionSlide(3)"
+            role="tab"
+            aria-selected="false"
+          >
+            <span class="production-tab-number">4</span>
+            <span class="production-tab-label">Menjadi Produk</span>
+          </button>
         </div>
 
-        <div class="product-grid large production-product-grid">
-          <article class="shop-product">
-            <img src="tas_ekonomi.jpg" alt="Tas Tote" />
+        <!-- Slider -->
+        <div class="production-slider" id="productionSlider">
+          <button
+            type="button"
+            class="production-slider-nav prev"
+            onclick="prevProductionSlide()"
+            aria-label="Tahap sebelumnya"
+          >
+            ‹
+          </button>
 
-            <span> Dari Plastik </span>
+          <div class="production-slider-viewport">
+            <div class="production-slider-track" id="productionSliderTrack">
+              <article class="production-slide">
+                <div class="production-slide-image">
+                  <img src="rumah_alur.png" alt="Rumah Tangga" />
+                </div>
 
-            <h3>Tas Tote Daur Ulang Plastik</h3>
+                <div class="production-slide-body">
+                  <span class="production-slide-badge">
+                    <span class="production-step-number">1</span>
+                    Tahap 1 dari 4
+                  </span>
 
-            <p>Material: Plastik PET</p>
+                  <h3>Rumah Tangga</h3>
 
-            <strong> Rp 75.000 </strong>
+                  <p>
+                    Sampah plastik dan organik dipilah langsung dari rumah
+                    oleh masyarakat sebelum dijemput atau disetorkan.
+                    Pemilahan sejak awal ini yang menentukan seberapa mudah
+                    sampah diolah pada tahap berikutnya.
+                  </p>
+                </div>
+              </article>
 
-            <button
-              onclick="
-                viewProductInPembelian('Tas Tote Daur Ulang Plastik', 'Plastik')
-              "
-            >
-              Lihat di Pembelian
-            </button>
-          </article>
+              <article class="production-slide">
+                <div class="production-slide-image">
+                  <img src="bank sampah_alur.png" alt="Bank Sampah" />
+                </div>
 
-          <article class="shop-product">
-            <img src="pot_kompos.jpeg" alt="Pot Kompos" />
+                <div class="production-slide-body">
+                  <span class="production-slide-badge">
+                    <span class="production-step-number">2</span>
+                    Tahap 2 dari 4
+                  </span>
 
-            <span> Dari Organik </span>
+                  <h3>Bank Sampah</h3>
 
-            <h3>Pot Kompos Organik</h3>
+                  <p>
+                    Sampah terpilah diterima bank sampah, lalu ditimbang,
+                    dicatat, dan diberi kode batch agar setiap setoran bisa
+                    dilacak sampai ke tahap produksi.
+                  </p>
+                </div>
+              </article>
 
-            <p>Material: Kompos Organik</p>
+              <article class="production-slide">
+                <div class="production-slide-image">
+                  <img src="produksi_alur.png" alt="Pihak Produksi" />
+                </div>
 
-            <strong> Rp 30.000 </strong>
+                <div class="production-slide-body">
+                  <span class="production-slide-badge">
+                    <span class="production-step-number">3</span>
+                    Tahap 3 dari 4
+                  </span>
 
-            <button
-              onclick="viewProductInPembelian('Pot Kompos Organik', 'Organik')"
-            >
-              Lihat di Pembelian
-            </button>
-          </article>
+                  <h3>Pihak Produksi</h3>
 
-          <article class="shop-product">
-            <img src="tumbler.jpg" alt="Botol" />
+                  <p>
+                    Bank sampah menyalurkan sampah terpilah ke mitra Produksi
+                    untuk diolah lebih lanjut menjadi bahan baku siap cetak
+                    atau siap olah.
+                  </p>
+                </div>
+              </article>
 
-            <span> Dari Plastik </span>
+              <article
+                class="production-slide production-slide-clickable"
+                onclick="showPage('pembelian')"
+                role="button"
+                tabindex="0"
+                title="Lihat produk di halaman Pembelian"
+                onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); showPage('pembelian'); }"
+              >
+                <div class="production-slide-image">
+                  <img src="produk jadi.png" alt="Produk Jadi" />
+                </div>
 
-            <h3>Botol Minum Recycled Plastic</h3>
+                <div class="production-slide-body">
+                  <span class="production-slide-badge">
+                    <span class="production-step-number">4</span>
+                    Tahap 4 dari 4
+                  </span>
 
-            <p>Material: Plastik HDPE</p>
+                  <h3>Menjadi Produk</h3>
 
-            <strong> Rp 65.000 </strong>
+                  <p>
+                    Bahan baku diolah menjadi produk bernilai jual dan siap
+                    digunakan kembali oleh masyarakat.
+                  </p>
 
-            <button
-              onclick="
-                viewProductInPembelian(
-                  'Botol Minum Recycled Plastic',
-                  'Plastik',
-                )
-              "
-            >
-              Lihat di Pembelian
-            </button>
-          </article>
+                  <span class="production-slide-cta">
+                    Lihat produk di Pembelian →
+                  </span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="production-slider-nav next"
+            onclick="nextProductionSlide()"
+            aria-label="Tahap berikutnya"
+          >
+            ›
+          </button>
+        </div>
+
+        <!-- Dots -->
+        <div class="production-dots" id="productionDots">
+          <button
+            type="button"
+            class="production-dot active"
+            onclick="goToProductionSlide(0)"
+            aria-label="Ke tahap 1"
+          ></button>
+
+          <button
+            type="button"
+            class="production-dot"
+            onclick="goToProductionSlide(1)"
+            aria-label="Ke tahap 2"
+          ></button>
+
+          <button
+            type="button"
+            class="production-dot"
+            onclick="goToProductionSlide(2)"
+            aria-label="Ke tahap 3"
+          ></button>
+
+          <button
+            type="button"
+            class="production-dot"
+            onclick="goToProductionSlide(3)"
+            aria-label="Ke tahap 4"
+          ></button>
         </div>
       </section>
     </main>
