@@ -78,16 +78,113 @@ function showPage(pageId) {
     renderJemputRekomendasi();
     renderRiwayatBatches();
     renderPanelPengelola();
+
+    // Halaman baru saja ditampilkan, jadi lebar #managerList belum
+    // pasti akurat sampai layout selesai dihitung ulang oleh browser.
+    setTimeout(updateManagerSlideButtons, 200);
   } else if (pageId === "dashboard") {
     renderDashboard();
   } else if (pageId === "portal-pengelola") {
     renderPortalPengelola();
+  } else if (pageId === "produksi") {
+    goToProductionSlide(0);
   }
 
   // Sinkronkan tampilan akun (navbar, tombol tambah produk, halaman
   // pengaturan) setiap kali berpindah halaman.
   updateAuthUI();
 }
+
+/* =========================================
+   ALUR PRODUKSI - SLIDER
+   -----------------------------------------
+   Slider "Alur Produksi" di halaman Produksi.
+   Tombol prev/next, tab nomor tahap, dan dot
+   semuanya mengontrol tahap yang sedang aktif
+   sehingga penjelasan tiap proses bisa dilihat
+   satu per satu.
+========================================= */
+
+let productionSlideIndex = 0;
+const PRODUCTION_SLIDE_COUNT = 4;
+
+function goToProductionSlide(index) {
+  const track = document.getElementById("productionSliderTrack");
+
+  if (!track) return;
+
+  // Batasi index supaya tidak keluar jangkauan
+  if (index < 0) index = PRODUCTION_SLIDE_COUNT - 1;
+  if (index > PRODUCTION_SLIDE_COUNT - 1) index = 0;
+
+  productionSlideIndex = index;
+
+  // Geser track slider
+  track.style.transform = `translateX(-${index * 100}%)`;
+
+  // Update tab aktif
+  const tabs = document.querySelectorAll(".production-tab");
+
+  tabs.forEach(function (tab) {
+    const isActive = Number(tab.dataset.index) === index;
+
+    tab.classList.toggle("active", isActive);
+    tab.setAttribute("aria-selected", isActive ? "true" : "false");
+  });
+
+  // Update dot aktif
+  const dots = document.querySelectorAll(".production-dot");
+
+  dots.forEach(function (dot, dotIndex) {
+    dot.classList.toggle("active", dotIndex === index);
+  });
+}
+
+function nextProductionSlide() {
+  goToProductionSlide(productionSlideIndex + 1);
+}
+
+function prevProductionSlide() {
+  goToProductionSlide(productionSlideIndex - 1);
+}
+
+// Dukungan swipe (geser jari) di layar sentuh
+(function setupProductionSwipe() {
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const slider = document.getElementById("productionSlider");
+
+    if (!slider) return;
+
+    slider.addEventListener(
+      "touchstart",
+      function (e) {
+        touchStartX = e.changedTouches[0].screenX;
+      },
+      { passive: true },
+    );
+
+    slider.addEventListener(
+      "touchend",
+      function (e) {
+        touchEndX = e.changedTouches[0].screenX;
+
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) < 40) return;
+
+        if (diff > 0) {
+          nextProductionSlide();
+        } else {
+          prevProductionSlide();
+        }
+      },
+      { passive: true },
+    );
+  });
+})();
 
 /* =========================================
    NAVBAR BUTTON
@@ -143,7 +240,7 @@ function filterManager(category) {
     const matches = category === "Semua" || categories.includes(categoryLower);
 
     if (matches) {
-      manager.style.display = "grid";
+      manager.style.display = "flex";
 
       found = true;
     } else {
@@ -158,6 +255,8 @@ function filterManager(category) {
   } else {
     notAvailable.style.display = "block";
   }
+
+  updateManagerSlideButtons();
 }
 
 /* =========================================
@@ -248,17 +347,32 @@ const wasteSearch = document.getElementById("wasteSearch");
 
 if (wasteSearch) {
   wasteSearch.addEventListener("input", function () {
-    const search = wasteSearch.value.toLowerCase();
+    const search = wasteSearch.value.trim().toLowerCase();
 
-    const managers = document.querySelectorAll(".manager-result");
+    const managers = document.querySelectorAll("#managerList .manager-result");
 
     let found = false;
 
     managers.forEach(function (manager) {
-      const categories = manager.dataset.category.toLowerCase();
+      // Cocokkan kata kunci dengan kategori sampah (mis. "plastik"),
+      // nama pengelola, DAN alamatnya, supaya pencarian benar-benar
+      // berguna dan tidak hanya terbatas pada kategori sampah.
+      const categories = (manager.dataset.category || "").toLowerCase();
 
-      if (categories.includes(search)) {
-        manager.style.display = "grid";
+      const nameEl = manager.querySelector(".manager-info h3");
+      const name = nameEl ? nameEl.textContent.toLowerCase() : "";
+
+      const addressEl = manager.querySelector(".manager-info p:last-child");
+      const address = addressEl ? addressEl.textContent.toLowerCase() : "";
+
+      const matches =
+        search === "" ||
+        categories.includes(search) ||
+        name.includes(search) ||
+        address.includes(search);
+
+      if (matches) {
+        manager.style.display = "flex";
 
         found = true;
       } else {
@@ -269,17 +383,72 @@ if (wasteSearch) {
     const notAvailable = document.getElementById("notAvailable");
 
     if (search === "") {
-      managers.forEach(function (manager) {
-        manager.style.display = "grid";
-      });
-
       notAvailable.style.display = "none";
     } else if (!found) {
       notAvailable.style.display = "block";
     } else {
       notAvailable.style.display = "none";
     }
+
+    // Kembalikan slider ke posisi awal & perbarui status tombol panah
+    // setiap kali hasil pencarian berubah.
+    const list = document.getElementById("managerList");
+    if (list) list.scrollTo({ left: 0, behavior: "smooth" });
+
+    updateManagerSlideButtons();
   });
+}
+
+/* =========================================
+   SLIDER HASIL PENCARIAN PENGELOLA
+   -----------------------------------------
+   Menggeser #managerList ke samping (kiri/kanan)
+   sejauh kira-kira satu kartu, dipanggil oleh
+   tombol panah di .manager-list-wrapper.
+========================================= */
+
+function slideManagerList(direction) {
+  const list = document.getElementById("managerList");
+
+  if (!list) return;
+
+  const card = list.querySelector(".manager-result");
+
+  const cardWidth = card ? card.getBoundingClientRect().width : 280;
+
+  const gap = 16;
+
+  list.scrollBy({
+    left: direction * (cardWidth + gap),
+
+    behavior: "smooth",
+  });
+}
+
+// Aktif/nonaktifkan tombol panah tergantung posisi scroll saat ini,
+// supaya tombol "kiri" mati saat sudah di ujung kiri, begitu juga kanan.
+function updateManagerSlideButtons() {
+  const list = document.getElementById("managerList");
+  const prevBtn = document.getElementById("managerPrevBtn");
+  const nextBtn = document.getElementById("managerNextBtn");
+
+  if (!list || !prevBtn || !nextBtn) return;
+
+  const maxScroll = list.scrollWidth - list.clientWidth;
+
+  prevBtn.disabled = list.scrollLeft <= 2;
+  nextBtn.disabled = list.scrollLeft >= maxScroll - 2;
+}
+
+const managerListEl = document.getElementById("managerList");
+
+if (managerListEl) {
+  managerListEl.addEventListener("scroll", updateManagerSlideButtons);
+
+  window.addEventListener("resize", updateManagerSlideButtons);
+
+  // Set status awal tombol panah setelah semua kartu ter-render.
+  setTimeout(updateManagerSlideButtons, 200);
 }
 
 /* =========================================
@@ -635,6 +804,10 @@ if (sortManager) {
     managers.forEach(function (manager) {
       list.appendChild(manager);
     });
+
+    list.scrollTo({ left: 0, behavior: "smooth" });
+
+    updateManagerSlideButtons();
   });
 }
 
