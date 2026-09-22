@@ -547,19 +547,19 @@
             </select>
           </div>
 
-          <div class="manager-list-wrapper">
+          <div class="manager-carousel">
             <button
               type="button"
-              class="manager-slide-btn manager-slide-btn--prev"
+              class="carousel-nav carousel-nav--prev"
               id="managerPrevBtn"
-              aria-label="Geser ke kiri"
-              onclick="slideManagerList(-1)"
+              onclick="slideManager(-1)"
+              aria-label="Lihat tempat sebelumnya"
             >
               ‹
             </button>
 
             <div id="managerList">
-            <!-- Data lokasi di bawah ini diambil dari Google Maps (pencarian
+              <!-- Data lokasi di bawah ini diambil dari Google Maps (pencarian
                  "bank sampah Malang", "TPS 3R Kota Malang", "TPA Supit Urang
                  Malang", dan "pusat daur ulang sampah Malang"). Kategori
                  sampah yang diterima merupakan perkiraan berdasarkan jenis
@@ -1035,14 +1035,16 @@
 
             <button
               type="button"
-              class="manager-slide-btn manager-slide-btn--next"
+              class="carousel-nav carousel-nav--next"
               id="managerNextBtn"
-              aria-label="Geser ke kanan"
-              onclick="slideManagerList(1)"
+              onclick="slideManager(1)"
+              aria-label="Lihat tempat selanjutnya"
             >
               ›
             </button>
           </div>
+
+          <div class="manager-carousel-dots" id="managerCarouselDots"></div>
 
           <!-- TIDAK TERSEDIA -->
 
