@@ -69,9 +69,10 @@ function showPage(pageId) {
   if (pageId === "home") {
     initHomeMap();
   } else if (pageId === "pengelola") {
+    // Halaman Pengelola kini juga memuat "Ajukan Penjemputan" (dulunya
+    // halaman terpisah "jemput"), jadi inisialisasi keduanya sekaligus.
     initPengelolaMap();
     loadGoogleWasteBanksIntoPage(false);
-  } else if (pageId === "jemput") {
     renderJemputAuthState();
     populateJemputPengelolaSelect();
     renderJemputRekomendasi();
@@ -116,18 +117,18 @@ function selectWaste(type) {
    FILTER PENGELOLA
 ========================================= */
 
-// Jenis limbah yang termasuk kategori "Anorganik". Bank sampah pada
-// umumnya menerima seluruh jenis limbah anorganik ini dalam satu tempat,
-// jadi filter "Anorganik" mencocokkan pengelola yang menerima salah satu
-// dari jenis-jenis berikut.
-const INORGANIC_CATEGORIES = [
-  "plastik",
-  "kertas",
-  "logam",
-  "kaca",
-  "elektronik",
-  "bioplastik",
-];
+/* =========================================
+   SUMBER DATA TUNGGAL: KATEGORI SAMPAH
+   -----------------------------------------
+   Prototipe ini sengaja dipersempit ke dua kategori sampah saja:
+   Organik dan Plastik (Plastik punya sub-jenis Kode Daur Ulang 1-7,
+   lihat KODE_DAUR_ULANG_LABELS di bawah). Semua tombol filter,
+   dropdown, dan checkbox jenis sampah di seluruh halaman dibangun
+   dari larik WASTE_CATEGORIES ini lewat renderCategoryUI() supaya
+   kalau nanti kategori baru perlu ditambahkan lagi, cukup ubah di
+   satu tempat ini saja.
+========================================= */
+const WASTE_CATEGORIES = ["Organik", "Plastik"];
 
 function filterManager(category) {
   const managers = document.querySelectorAll(".manager-result");
@@ -136,29 +137,10 @@ function filterManager(category) {
 
   const categoryLower = category.toLowerCase();
 
-  // Plastik, Kertas, Logam, Kaca, dan Elektronik otomatis dikenali sistem
-  // sebagai bagian dari sampah "Anorganik". Jadi selain pengelola yang
-  // spesifik menerima jenis tersebut, pengelola umum anorganik (mis. Bank
-  // Sampah yang ditandai kategori "Anorganik") ikut ditampilkan.
-  const isKnownInorganicType = INORGANIC_CATEGORIES.includes(categoryLower);
-
   managers.forEach(function (manager) {
     const categories = manager.dataset.category.toLowerCase().split(",");
 
-    let matches;
-
-    if (category === "Semua") {
-      matches = true;
-    } else if (category === "Anorganik") {
-      matches = categories.some(function (c) {
-        return INORGANIC_CATEGORIES.includes(c) || c === "anorganik";
-      });
-    } else if (isKnownInorganicType) {
-      matches =
-        categories.includes(categoryLower) || categories.includes("anorganik");
-    } else {
-      matches = categories.includes(categoryLower);
-    }
+    const matches = category === "Semua" || categories.includes(categoryLower);
 
     if (matches) {
       manager.style.display = "grid";
@@ -176,6 +158,86 @@ function filterManager(category) {
   } else {
     notAvailable.style.display = "block";
   }
+}
+
+/* =========================================
+   RENDER UI KATEGORI SAMPAH
+   -----------------------------------------
+   Membangun ulang semua tombol/checkbox/dropdown jenis sampah dari
+   WASTE_CATEGORIES, supaya tidak ada daftar kategori yang ditulis
+   berulang-ulang secara manual di banyak tempat.
+========================================= */
+function renderCategoryUI() {
+  // Home: grid "Pilih Jenis Sampah"
+  const wasteGrid = document.getElementById("wasteGrid");
+  if (wasteGrid) {
+    wasteGrid.innerHTML = WASTE_CATEGORIES.map(function (cat) {
+      return (
+        "<button onclick=\"selectWaste('" + cat + "')\">" + cat + "</button>"
+      );
+    }).join("");
+  }
+
+  // Pengelola: sidebar filter kategori (tombol "Semua Sampah" tetap statis)
+  const categoryList = document.getElementById("categoryList");
+  if (categoryList) {
+    const generated = WASTE_CATEGORIES.map(function (cat) {
+      return (
+        "<button onclick=\"filterManager('" + cat + "')\">" + cat + "</button>"
+      );
+    }).join("");
+    categoryList.insertAdjacentHTML("beforeend", generated);
+  }
+
+  // Modal "Daftar sebagai Pengelola": jenis sampah yang diterima
+  const regGrid = document.getElementById("regCategoryGrid");
+  if (regGrid) {
+    regGrid.innerHTML = WASTE_CATEGORIES.map(function (cat) {
+      return (
+        '<label><input type="checkbox" value="' +
+        cat +
+        '" /> ' +
+        cat +
+        "</label>"
+      );
+    }).join("");
+  }
+
+  // Ajukan Penjemputan: dropdown "Jenis Sampah"
+  const jemputJenis = document.getElementById("jemputJenis");
+  if (jemputJenis) {
+    jemputJenis.innerHTML = WASTE_CATEGORIES.map(function (cat) {
+      return '<option value="' + cat + '">' + cat + "</option>";
+    }).join("");
+  }
+
+  // Modal "Tambahkan Produk Baru": kategori produk
+  const prodKategori = document.getElementById("prodKategori");
+  if (prodKategori) {
+    prodKategori.innerHTML = WASTE_CATEGORIES.map(function (cat) {
+      return '<option value="' + cat + '">Produk ' + cat + "</option>";
+    }).join("");
+  }
+
+  // Pembelian: sidebar filter kategori produk (tombol "Semua Produk" tetap statis)
+  const productCategoryFilter = document.getElementById(
+    "productCategoryFilter",
+  );
+  if (productCategoryFilter) {
+    const generated = WASTE_CATEGORIES.map(function (cat) {
+      return (
+        "<button onclick=\"filterProduct('" +
+        cat +
+        "')\">Produk " +
+        cat +
+        "</button>"
+      );
+    }).join("");
+    productCategoryFilter.insertAdjacentHTML("beforeend", generated);
+  }
+
+  // Sinkronkan visibilitas field Kode Daur Ulang dengan pilihan awal
+  updateJemputKodeDaurVisibility();
 }
 
 /* =========================================
@@ -329,8 +391,20 @@ function viewOnGoogleMaps(lat, lng, mapsUri) {
 }
 
 /* =========================================
-   EDUKASI
+   EDUKASI (kini menjadi bagian dari Home)
 ========================================= */
+
+// Edukasi tidak lagi jadi halaman terpisah, jadi tombol yang dulu memanggil
+// showPage('edukasi') sekarang memakai ini: pastikan halaman Home aktif,
+// lalu gulir ke bagian Edukasi di halaman tersebut.
+function goToEducation() {
+  showPage("home");
+
+  setTimeout(function () {
+    const target = document.getElementById("home-edukasi");
+    if (target) target.scrollIntoView({ behavior: "smooth" });
+  }, 100);
+}
 
 function openEducation(type) {
   if (type === "plastik") {
@@ -351,14 +425,6 @@ function openEducation(type) {
         "4. Jaga kelembapan.\n" +
         "5. Aduk secara berkala.\n" +
         "6. Tunggu sampai menjadi kompos.",
-    );
-  } else if (type === "kertas") {
-    alert(
-      "Pengelolaan Sampah Kertas\n\n" +
-        "1. Pisahkan kertas dari sampah lain.\n" +
-        "2. Pastikan tidak terlalu basah.\n" +
-        "3. Gunakan kembali jika memungkinkan.\n" +
-        "4. Sisanya dapat dikirim ke bank sampah.",
     );
   }
 }
@@ -501,22 +567,33 @@ function filterProduct(category) {
   }
 }
 
+/* Catatan: fungsi "makeProduct" (halaman Produk lama, tutorial DIY)
+   dihapus bersama restrukturisasi navigasi. */
+
 /* =========================================
-   CARA MEMBUAT PRODUK
+   PRODUK DI HALAMAN PRODUKSI -> PEMBELIAN
+   -----------------------------------------
+   Dipanggil saat produk pada halaman Produksi
+   ditekan. Membawa pengguna ke halaman
+   Pembelian, memfilter sesuai kategori produk
+   tersebut, lalu membuka detailnya supaya
+   pengguna bisa lanjut melihat produk lain.
 ========================================= */
 
-function makeProduct(productName) {
-  alert(
-    "Cara Membuat\n\n" +
-      productName +
-      "\n\n" +
-      "Nanti halaman ini akan berisi:\n" +
-      "- Alat dan bahan\n" +
-      "- Langkah pembuatan\n" +
-      "- Foto setiap langkah\n" +
-      "- Video tutorial\n" +
-      "- Tingkat kesulitan",
-  );
+function viewProductInPembelian(productName, category) {
+  showPage("pembelian");
+
+  // Tunggu sebentar sampai halaman Pembelian aktif & grid produk
+  // sudah tampil, baru filter kategori dan buka detail produknya.
+  setTimeout(function () {
+    if (category) {
+      filterProduct(category);
+    }
+
+    if (productName) {
+      buyProduct(productName);
+    }
+  }, 150);
 }
 
 /* =========================================
@@ -1058,7 +1135,7 @@ async function fetchGoogleWasteBanks(center) {
       telepon: place.nationalPhoneNumber || null,
       // Places API tidak menyediakan rincian jenis sampah yang diterima,
       // jadi dipakai kategori umum sebagai perkiraan awal.
-      categories: ["Plastik", "Kertas", "Logam", "Kaca"],
+      categories: ["Plastik"],
       foto: photoUrl,
       googleMapsUri: place.googleMapsUri || null,
       source: "google",
@@ -2064,6 +2141,41 @@ function closeRouteModal() {
   if (modal) modal.classList.remove("open");
 }
 
+// Kode daur ulang plastik (Resin Identification Code) 1-7 yang untuk saat
+// ini WAJIB dipilih pengguna secara MANUAL lewat dropdown "Kode Daur
+// Ulang". Ke depan, nilai ini bisa diisi otomatis lewat
+// detectKodeDaurUlang() di ai-slot.js begitu AI-nya sudah siap — lihat
+// komentar di file tersebut untuk bentuk output yang diharapkan.
+const KODE_DAUR_ULANG_LABELS = {
+  1: "1 - PET",
+  2: "2 - HDPE",
+  3: "3 - PVC",
+  4: "4 - LDPE",
+  5: "5 - PP",
+  6: "6 - PS",
+  7: "7 - Lainnya",
+};
+
+// Kode Daur Ulang (1-7) hanya relevan untuk sub-jenis sampah Plastik,
+// jadi field ini disembunyikan & tidak wajib diisi saat jenis sampah
+// yang dipilih adalah Organik.
+function updateJemputKodeDaurVisibility() {
+  const jenisSelect = document.getElementById("jemputJenis");
+  const kodeWrap = document.getElementById("jemputKodeDaurWrap");
+  const kodeSelect = document.getElementById("jemputKodeDaur");
+
+  if (!jenisSelect || !kodeWrap || !kodeSelect) return;
+
+  const isPlastik = jenisSelect.value === "Plastik";
+
+  kodeWrap.style.display = isPlastik ? "" : "none";
+  kodeSelect.required = isPlastik;
+
+  if (!isPlastik) {
+    kodeSelect.value = "";
+  }
+}
+
 function handleJemputSubmit(event) {
   event.preventDefault();
 
@@ -2084,58 +2196,22 @@ function handleJemputSubmit(event) {
   const berat = parseFloat(document.getElementById("jemputBerat").value);
   const pengelolaTujuan = document.getElementById("jemputPengelola").value;
   const catatan = document.getElementById("jemputCatatan").value.trim();
+  const kodeDaurUlangRaw = document.getElementById("jemputKodeDaur").value;
+  const kodeDaurUlang = kodeDaurUlangRaw
+    ? parseInt(kodeDaurUlangRaw, 10)
+    : null;
 
   if (!pengelolaTujuan) {
     alert("Silakan pilih pengelola tujuan.");
     return;
   }
 
-  // Verifikasi kamera WAJIB dilakukan, dan hasil deteksi AI-nya harus
-  // sesuai dengan "Jenis Sampah" yang dipilih pengguna. Ini menutup celah
-  // deklarasi asal pilih yang tidak bisa dibuktikan sejak awal.
-  if (!lastWasteDetection) {
-    alert(
-      "Pengajuan ditolak: Anda harus memverifikasi sampah dengan kamera " +
-        'terlebih dahulu (tombol "Buka Kamera") sebelum mengajukan ' +
-        "penjemputan.",
-    );
-    openWasteCamera();
+  // Kode Daur Ulang WAJIB dipilih, tapi hanya untuk sub-jenis Plastik.
+  // Selama AI belum ada, pengguna memilih kode ini sendiri secara manual
+  // (lihat catatan di atas const KODE_DAUR_ULANG_LABELS).
+  if (jenis === "Plastik" && !kodeDaurUlang) {
+    alert("Silakan pilih Kode Daur Ulang untuk sampah Plastik Anda.");
     return;
-  }
-
-  const aiInfo = getWasteCategoryInfo(lastWasteDetection);
-  const aiMatches = aiInfo.declared.indexOf(jenis) !== -1;
-
-  if (aiInfo.declared.length === 0) {
-    alert(
-      'Pengajuan ditolak: hasil verifikasi kamera ("' +
-        aiInfo.name +
-        '") tidak dikenali oleh sistem ReLoop. Silakan foto ulang dengan ' +
-        "pencahayaan lebih terang dan satu objek saja.",
-    );
-    openWasteCamera();
-    return;
-  }
-
-  if (!aiMatches) {
-    alert(
-      'Pengajuan ditolak: hasil verifikasi kamera mendeteksi "' +
-        aiInfo.name +
-        '", tidak sesuai dengan jenis sampah yang Anda pilih ("' +
-        jenis +
-        '"). Sesuaikan pilihan "Jenis Sampah" dengan hasil AI, atau foto ' +
-        "ulang sampah yang benar.",
-    );
-    return;
-  }
-
-  if (lastWasteDetection.probability < WASTE_LOW_CONFIDENCE) {
-    const lanjut = confirm(
-      "Keyakinan AI terhadap hasil ini masih rendah (" +
-        formatWastePercent(lastWasteDetection.probability) +
-        "). Tetap ajukan penjemputan dengan hasil ini?",
-    );
-    if (!lanjut) return;
   }
 
   const batch = {
@@ -2153,12 +2229,14 @@ function handleJemputSubmit(event) {
     selisihPersen: null,
     tanggalVerifikasi: null,
     usedInProduct: false,
-    // Hasil verifikasi kamera saat pengajuan dibuat (untuk jejak/traceability).
-    aiDetectedJenis: aiInfo.name,
-    aiConfidence: lastWasteDetection.probability,
-    // Foto verifikasi (data URL) ikut disimpan supaya tetap terlihat di
-    // riwayat penjemputan, bahkan setelah halaman dimuat ulang.
-    foto: lastWastePhotoDataUrl,
+    // Kode daur ulang (1-7) yang dipilih pengguna secara manual saat
+    // pengajuan dibuat (untuk jejak/traceability). Hanya terisi untuk
+    // sub-jenis sampah Plastik.
+    kodeDaurUlang: jenis === "Plastik" ? kodeDaurUlang : null,
+    kodeDaurUlangLabel:
+      jenis === "Plastik"
+        ? KODE_DAUR_ULANG_LABELS[kodeDaurUlang] || null
+        : null,
     // Lokasi pengguna saat pengajuan dibuat, supaya pengelola tujuan bisa
     // melihat rute penjemputan menuju lokasi ini. Bisa null kalau izin
     // lokasi belum/tidak diberikan.
@@ -2171,6 +2249,7 @@ function handleJemputSubmit(event) {
   saveStoredBatches(batches);
 
   document.getElementById("jemputForm").reset();
+  updateJemputKodeDaurVisibility();
 
   renderRiwayatBatches();
   renderPanelPengelola();
@@ -2194,8 +2273,7 @@ function handleJemputSubmit(event) {
 // oleh pengelola tujuan).
 const RIWAYAT_PERIODE_HARI = 30;
 
-// Membangun satu kartu batch untuk riwayat, termasuk foto verifikasi
-// (kalau ada) supaya tetap terlihat meski sudah lewat dari sesi kamera.
+// Membangun satu kartu batch untuk riwayat.
 function buildRiwayatBatchCard(b) {
   const statusClass =
     b.status === "diajukan"
@@ -2217,27 +2295,12 @@ function buildRiwayatBatchCard(b) {
         b.beratDeclared +
         " kg</strong></p>";
 
-  const aiInfo = b.aiDetectedJenis
-    ? "<p>Terverifikasi kamera sebagai: <strong>" +
-      b.aiDetectedJenis +
-      "</strong>" +
-      (b.aiConfidence != null
-        ? " (" + (b.aiConfidence * 100).toFixed(0) + "% yakin)"
-        : "") +
-      "</p>"
-    : "";
-
-  const fotoHtml = b.foto
-    ? '<div class="batch-card-photo"><img src="' +
-      b.foto +
-      '" alt="Foto verifikasi sampah batch ' +
-      b.id +
-      '" loading="lazy" /></div>'
+  const kodeDaurUlangInfo = b.kodeDaurUlangLabel
+    ? "<p>Kode Daur Ulang: <strong>" + b.kodeDaurUlangLabel + "</strong></p>"
     : "";
 
   return (
     '<div class="batch-card">' +
-    fotoHtml +
     '<div class="batch-card-top">' +
     "<strong>" +
     b.id +
@@ -2254,7 +2317,7 @@ function buildRiwayatBatchCard(b) {
     b.pengelolaTujuan +
     "</p>" +
     verifiedInfo +
-    aiInfo +
+    kodeDaurUlangInfo +
     "<small>Diajukan oleh " +
     b.userNama +
     " pada " +
@@ -2368,17 +2431,8 @@ function renderPanelPengelola() {
 
   list.innerHTML = batches
     .map(function (b) {
-      const fotoHtml = b.foto
-        ? '<div class="batch-card-photo"><img src="' +
-          b.foto +
-          '" alt="Foto verifikasi sampah batch ' +
-          b.id +
-          '" loading="lazy" /></div>'
-        : "";
-
       return (
         '<div class="batch-card">' +
-        fotoHtml +
         '<div class="batch-card-top">' +
         "<strong>" +
         b.id +
@@ -2393,14 +2447,10 @@ function renderPanelPengelola() {
         b.userNama +
         "</p>" +
         (b.catatan ? "<p><em>Catatan: " + b.catatan + "</em></p>" : "") +
-        (b.aiDetectedJenis
-          ? "<p>✓ Terverifikasi kamera sebagai <strong>" +
-            b.aiDetectedJenis +
-            "</strong>" +
-            (b.aiConfidence != null
-              ? " (" + (b.aiConfidence * 100).toFixed(0) + "% yakin)"
-              : "") +
-            "</p>"
+        (b.kodeDaurUlangLabel
+          ? "<p>Kode Daur Ulang: <strong>" +
+            b.kodeDaurUlangLabel +
+            "</strong></p>"
           : "") +
         '<div class="batch-card-actions">' +
         '<button class="primary-button" onclick="confirmBatchReceipt(\'' +
@@ -2790,17 +2840,6 @@ function updateAuthUI() {
 // Selisih berat (%) di atas angka ini -> status "ditinjau".
 // Samakan dengan angka di confirmBatchReceipt() (panel lama di Jemput Sampah).
 const PORTAL_REVIEW_THRESHOLD = 25;
-
-const PORTAL_JENIS_SAMPAH = [
-  "Plastik",
-  "Kertas",
-  "Logam",
-  "Kaca",
-  "Organik",
-  "Elektronik",
-  "Bioplastik",
-  "Lainnya",
-];
 
 const PORTAL_FILTERS = [
   { key: "semua", label: "Semua" },
@@ -3289,14 +3328,10 @@ function buildPortalBatchCard(b) {
     portalEscape(b.userNama || "Tamu") +
     "</strong></p>" +
     detail +
-    (b.aiDetectedJenis
-      ? "<p>✓ Terverifikasi kamera sebagai <strong>" +
-        portalEscape(b.aiDetectedJenis) +
-        "</strong>" +
-        (b.aiConfidence != null
-          ? " (" + (b.aiConfidence * 100).toFixed(0) + "% yakin)"
-          : "") +
-        "</p>"
+    (b.kodeDaurUlangLabel
+      ? "<p>Kode Daur Ulang: <strong>" +
+        portalEscape(b.kodeDaurUlangLabel) +
+        "</strong></p>"
       : "") +
     (b.catatan
       ? "<p><em>Catatan: " + portalEscape(b.catatan) + "</em></p>"
@@ -3501,7 +3536,7 @@ function openPortalConfirmModal(batchId) {
       : "");
 
   // Pilihan jenis: default sama dengan deklarasi (boleh dikoreksi pengelola)
-  const jenisList = PORTAL_JENIS_SAMPAH.slice();
+  const jenisList = WASTE_CATEGORIES.slice();
   if (jenisList.indexOf(batch.jenisDeclared) === -1) {
     jenisList.unshift(batch.jenisDeclared);
   }
@@ -3703,7 +3738,7 @@ function fillPortalProfilForm(place) {
   const selected = place.categories || [];
 
   // Kategori yang sudah tersimpan tapi tidak ada di daftar baku tetap ditampilkan
-  const options = PORTAL_JENIS_SAMPAH.slice();
+  const options = WASTE_CATEGORIES.slice();
   selected.forEach(function (c) {
     if (options.indexOf(c) === -1) options.push(c);
   });
@@ -3867,6 +3902,7 @@ window.addEventListener("storage", function (event) {
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
+  renderCategoryUI();
   loadStoredManagersOnStart();
   loadStoredProductsOnStart();
   updateAuthUI();
@@ -3896,9 +3932,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         updateDistancesFromUserLocation();
 
-        // Kalau halaman Jemput Sampah sudah aktif, ikut segarkan rekomendasi
-        // pengelola terdekat & urutan <select> dengan lokasi sungguhan.
-        const jemputPage = document.getElementById("jemput");
+        // Kalau halaman Pengelola (yang kini juga memuat Jemput Sampah)
+        // sudah aktif, ikut segarkan rekomendasi pengelola terdekat &
+        // urutan <select> dengan lokasi sungguhan.
+        const jemputPage = document.getElementById("pengelola");
         if (jemputPage && jemputPage.classList.contains("active-page")) {
           populateJemputPengelolaSelect();
           renderJemputRekomendasi();
@@ -3911,866 +3948,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 });
-
-/* =========================================================
-   AI DETEKSI SAMPAH (KAMERA + KLASIFIKASI GAMBAR DI BROWSER)
-   ---------------------------------------------------------
-   Alur yang dijalankan kode di bagian ini:
-
-     Buka Kamera -> Ambil Foto -> (Ulangi) -> Analisis
-       -> model TensorFlow.js membaca foto
-       -> kategori sampah + confidence (persentase keyakinan)
-
-   PRIVASI:
-   - Foto hanya digambar ke <canvas> lalu dibaca oleh model yang
-     berjalan DI BROWSER. Tidak ada fetch()/upload foto ke server
-     atau API mana pun, dan tidak ada API key.
-   - Satu-satunya yang bisa diunduh dari internet adalah KODE
-     library TensorFlow.js (jika file lokal libs/tf.min.js tidak ada).
-     Foto tidak ikut terkirim ketika library diunduh.
-========================================================= */
-
-// Lokasi file model (hasil export Teachable Machine / TensorFlow.js).
-const WASTE_MODEL_URL = "model/model.json";
-const WASTE_METADATA_URL = "model/metadata.json";
-
-// Library TensorFlow.js: dicoba dari file lokal dulu, baru dari CDN.
-// Untuk 100% tanpa internet, simpan file tf.min.js di folder libs/.
-const WASTE_TFJS_LOCAL = "libs/tf.min.js";
-const WASTE_TFJS_CDN =
-  "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
-
-// Jika confidence di bawah angka ini, pengguna diberi peringatan.
-const WASTE_LOW_CONFIDENCE = 0.6;
-
-// Data tampilan untuk 5 kategori. Ini HANYA teks/ikon untuk hasil;
-// kategori yang muncul selalu ditentukan oleh output model.
-const WASTE_CATEGORIES = {
-  organic: {
-    name: "Organik",
-    english: "Organic",
-    emoji: "🍃",
-    // Pilihan "Jenis Sampah" di form Jemput yang dianggap cocok
-    declared: ["Organik"],
-    disposalTitle: "Sampah organik",
-    disposalText:
-      "Pisahkan dari sampah kering. Bisa dijadikan kompos atau pakan maggot; jangan dicampur dengan plastik.",
-  },
-  plastic: {
-    name: "Plastik",
-    english: "Plastic",
-    emoji: "♻️",
-    declared: ["Plastik", "Bioplastik"],
-    disposalTitle: "Sampah plastik",
-    disposalText:
-      "Kosongkan, bilas, lalu keringkan. Setor ke bank sampah atau pengelola yang menerima plastik.",
-  },
-  glass: {
-    name: "Kaca",
-    english: "Glass",
-    emoji: "🍾",
-    declared: ["Kaca"],
-    disposalTitle: "Sampah kaca",
-    disposalText:
-      "Bilas dan bungkus pecahan agar aman dibawa. Setor ke pengelola yang menerima kaca.",
-  },
-  paper: {
-    name: "Kertas",
-    english: "Paper",
-    emoji: "📄",
-    declared: ["Kertas"],
-    disposalTitle: "Sampah kertas",
-    disposalText:
-      "Jaga tetap kering dan bersih. Kertas basah atau berminyak sulit didaur ulang, pisahkan dari kertas bersih.",
-  },
-  otherinorganic: {
-    name: "Anorganik lainnya",
-    english: "Other Inorganic",
-    emoji: "🔩",
-    declared: ["Logam", "Elektronik", "Lainnya"],
-    disposalTitle: "Sampah anorganik lainnya",
-    disposalText:
-      "Termasuk logam, kain, dan sejenisnya. Barang elektronik atau baterai sebaiknya diserahkan ke pengelola yang menerima e-waste; tanyakan dulu ke pengelola terdekat.",
-  },
-};
-
-// Nama kelas di metadata.json dicocokkan ke kunci di atas lewat
-// nama (bukan urutan), jadi urutan kelas di model tidak jadi masalah.
-const WASTE_LABEL_ALIASES = {
-  organic: "organic",
-  organik: "organic",
-  plastic: "plastic",
-  plastik: "plastic",
-  glass: "glass",
-  kaca: "glass",
-  paper: "paper",
-  kertas: "paper",
-  otherinorganic: "otherinorganic",
-  other: "otherinorganic",
-  anorganiklainnya: "otherinorganic",
-  lainnya: "otherinorganic",
-};
-
-// --- Status yang diingat selama halaman terbuka ---
-let wasteCameraStream = null; // aliran video kamera (null = kamera mati)
-let wasteCameraStep = "live"; // live | captured | analyzing | result
-let wasteCameraFacing = "environment"; // environment = kamera belakang, user = kamera depan
-let wasteCameraSwitching = false; // penanda sedang berpindah kamera
-let wastePhotoReady = false; // sudah ada foto di canvas?
-let wasteAnalysisToken = 0; // untuk membatalkan analisis yang sudah usang
-let wasteModelPromise = null; // model dimuat sekali lalu dipakai ulang
-let lastWasteDetection = null; // hasil terakhir (untuk kotak di form Jemput)
-let lastWastePhotoDataUrl = null; // foto verifikasi terakhir (disimpan ke riwayat batch)
-
-function wasteEl(id) {
-  return document.getElementById(id);
-}
-
-/* ---------- Memuat TensorFlow.js & model ---------- */
-
-function wasteError(code, detail) {
-  const error = new Error(detail ? code + ": " + detail : code);
-  error.code = code;
-  error.detail = detail || "";
-  return error;
-}
-
-function loadWasteScript(src) {
-  return new Promise(function (resolve, reject) {
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = resolve;
-    script.onerror = function () {
-      script.remove();
-      reject(new Error("Gagal memuat " + src));
-    };
-    document.head.appendChild(script);
-  });
-}
-
-// Pastikan library TensorFlow.js (objek global "tf") tersedia.
-async function ensureTensorFlow() {
-  if (window.tf) return;
-
-  const sources = [WASTE_TFJS_LOCAL, WASTE_TFJS_CDN];
-
-  for (const src of sources) {
-    try {
-      await loadWasteScript(src);
-      if (window.tf) return;
-    } catch (error) {
-      console.warn(error.message);
-    }
-  }
-
-  throw wasteError("TFJS_FAILED");
-}
-
-// Memuat model + daftar label. Hanya membaca file dari website sendiri.
-async function loadWasteModel() {
-  // fetch() ke file model tidak bisa jalan kalau halaman dibuka via file://
-  if (location.protocol === "file:") throw wasteError("FILE_PROTOCOL");
-
-  await ensureTensorFlow();
-  await tf.ready();
-
-  // 1) Baca daftar label (urutannya sama dengan output model)
-  let metadataResponse;
-  try {
-    metadataResponse = await fetch(WASTE_METADATA_URL);
-  } catch (error) {
-    throw wasteError("MODEL_NOT_FOUND");
-  }
-  if (!metadataResponse.ok) throw wasteError("MODEL_NOT_FOUND");
-
-  let metadata;
-  try {
-    metadata = await metadataResponse.json();
-  } catch (error) {
-    throw wasteError("METADATA_INVALID");
-  }
-
-  const labels = metadata && metadata.labels;
-  if (!Array.isArray(labels) || labels.length === 0) {
-    throw wasteError("METADATA_INVALID");
-  }
-
-  // 2) Muat model (Teachable Machine & Keras = "layers model")
-  let model;
-  try {
-    model = await tf.loadLayersModel(WASTE_MODEL_URL);
-  } catch (layersError) {
-    try {
-      model = await tf.loadGraphModel(WASTE_MODEL_URL);
-    } catch (graphError) {
-      console.error(layersError, graphError);
-      throw wasteError("MODEL_LOAD_FAILED", layersError.message);
-    }
-  }
-
-  // Ukuran input model, biasanya [null, 224, 224, 3]
-  const shape = model.inputs[0].shape;
-  const inputHeight = shape[1] || 224;
-  const inputWidth = shape[2] || 224;
-
-  // Jalankan sekali dengan gambar kosong ("pemanasan") supaya
-  // analisis pertama pengguna tidak terasa lambat.
-  const dummyInput = tf.zeros([1, inputHeight, inputWidth, 3]);
-  const dummyOutput = model.predict(dummyInput);
-  await [].concat(dummyOutput)[0].data();
-  dummyInput.dispose();
-  [].concat(dummyOutput).forEach(function (tensor) {
-    tensor.dispose();
-  });
-
-  return {
-    model: model,
-    labels: labels,
-    inputWidth: inputWidth,
-    inputHeight: inputHeight,
-  };
-}
-
-// Model dimuat sekali saja; kalau gagal, boleh dicoba lagi nanti.
-function getWasteModel() {
-  if (!wasteModelPromise) {
-    wasteModelPromise = loadWasteModel().catch(function (error) {
-      wasteModelPromise = null;
-      throw error;
-    });
-  }
-  return wasteModelPromise;
-}
-
-/* ---------- Klasifikasi gambar ---------- */
-
-function normalizeWasteLabel(rawLabel) {
-  const cleaned = String(rawLabel)
-    .toLowerCase()
-    .replace(/[^a-z]/g, "");
-  return WASTE_LABEL_ALIASES[cleaned] || null;
-}
-
-// Model yang benar mengeluarkan probabilitas (jumlah = 1). Jika ternyata
-// mengeluarkan skor mentah, ubah dengan softmax.
-function toWasteProbabilities(values) {
-  const sum = values.reduce(function (a, b) {
-    return a + b;
-  }, 0);
-  const allInRange = values.every(function (v) {
-    return v >= 0 && v <= 1;
-  });
-
-  if (allInRange && Math.abs(sum - 1) < 0.01) return values;
-
-  const max = Math.max.apply(null, values);
-  const exps = values.map(function (v) {
-    return Math.exp(v - max);
-  });
-  const total = exps.reduce(function (a, b) {
-    return a + b;
-  }, 0);
-  return exps.map(function (e) {
-    return e / total;
-  });
-}
-
-// Inti AI: ubah foto (canvas) jadi angka, lalu minta model menebak.
-async function classifyWasteCanvas(bundle, canvas) {
-  // Langkah 1 - siapkan gambar sama seperti saat model dilatih:
-  //   potong persegi di tengah -> kecilkan ke 224x224 -> skala -1..1
-  const input = tf.tidy(function () {
-    let image = tf.browser.fromPixels(canvas); // [tinggi, lebar, 3], 0..255
-    const height = image.shape[0];
-    const width = image.shape[1];
-    const size = Math.min(height, width);
-    const top = Math.floor((height - size) / 2);
-    const left = Math.floor((width - size) / 2);
-
-    image = image.slice([top, left, 0], [size, size, 3]);
-    image = tf.image.resizeBilinear(image, [
-      bundle.inputHeight,
-      bundle.inputWidth,
-    ]);
-
-    return image.cast("float32").div(127.5).sub(1).expandDims(0);
-  });
-
-  let output;
-  try {
-    // Langkah 2 - model menghitung skor untuk setiap kategori
-    output = bundle.model.predict(input);
-    if (Array.isArray(output)) output = output[0];
-    const raw = Array.from(await output.data());
-
-    if (raw.length !== bundle.labels.length) {
-      throw wasteError(
-        "LABEL_MISMATCH",
-        bundle.labels.length + " label vs " + raw.length + " output",
-      );
-    }
-
-    // Langkah 3 - pasangkan skor dengan nama kelas, urutkan dari tertinggi
-    const probabilities = toWasteProbabilities(raw);
-
-    return bundle.labels
-      .map(function (label, index) {
-        return {
-          label: label,
-          key: normalizeWasteLabel(label),
-          probability: probabilities[index],
-        };
-      })
-      .sort(function (a, b) {
-        return b.probability - a.probability;
-      });
-  } finally {
-    // Bebaskan memori GPU/CPU yang dipakai tensor
-    input.dispose();
-    if (output) output.dispose();
-  }
-}
-
-/* ---------- Pesan error yang mudah dipahami ---------- */
-
-function wasteErrorMessage(error) {
-  switch (error && error.code) {
-    case "FILE_PROTOCOL":
-      return "Website dibuka langsung dari file (file://), sehingga model AI tidak bisa dimuat. Jalankan lewat server lokal (localhost), lihat PANDUAN-AI.md.";
-    case "TFJS_FAILED":
-      return "Library TensorFlow.js gagal dimuat. Periksa koneksi internet, atau simpan file tf.min.js di folder libs/.";
-    case "MODEL_NOT_FOUND":
-      return "Model AI belum ditemukan. Letakkan model.json, metadata.json, dan file .bin di folder model/ (lihat PANDUAN-AI.md).";
-    case "METADATA_INVALID":
-      return "File model/metadata.json tidak bisa dibaca atau tidak berisi daftar 'labels'.";
-    case "MODEL_LOAD_FAILED":
-      return (
-        "Model gagal dimuat (" +
-        error.detail +
-        "). Pastikan model.json dan semua file .bin ada di folder model/."
-      );
-    case "LABEL_MISMATCH":
-      return (
-        "Jumlah label di metadata.json tidak sama dengan output model (" +
-        error.detail +
-        ")."
-      );
-    default:
-      return (
-        "Analisis gagal: " +
-        ((error && error.message) || "kesalahan tidak diketahui") +
-        "."
-      );
-  }
-}
-
-function showCameraError(message) {
-  const box = wasteEl("cameraError");
-  box.textContent = message;
-  box.hidden = false;
-}
-
-function hideCameraError() {
-  wasteEl("cameraError").hidden = true;
-}
-
-/* ---------- Tahapan tampilan di dalam modal ---------- */
-
-const WASTE_STEP_TEXT = {
-  live: "Letakkan satu jenis sampah di tengah bingkai dengan cahaya yang cukup.",
-  captured:
-    "Periksa fotonya. Jika sudah jelas tekan Analisis, jika buram ulangi foto.",
-  analyzing: "AI sedang membaca foto di perangkat Anda.",
-  result: "Hasil analisis AI. Foto tidak dikirim ke server mana pun.",
-};
-
-// Satu fungsi yang mengatur bagian mana yang tampil di setiap tahap.
-function setCameraStep(step) {
-  wasteCameraStep = step;
-
-  const isLive = step === "live";
-  const hasPhoto = step === "captured" || step === "analyzing";
-  const isResult = step === "result";
-
-  wasteEl("wasteCameraVideo").hidden = !isLive;
-  wasteEl("wasteCameraCanvas").hidden = isLive; // canvas = foto hasil jepretan
-  wasteEl("cameraLoading").hidden = step !== "analyzing";
-
-  wasteEl("cameraStepLive").hidden = !isLive;
-  wasteEl("cameraStepCaptured").hidden = !hasPhoto;
-  wasteEl("cameraStepResult").hidden = !isResult;
-  wasteEl("cameraAiResult").hidden = !isResult;
-
-  // Saat hasil tampil, foto dikecilkan agar hasil AI langsung terlihat.
-  wasteEl("wasteCameraModal")
-    .querySelector(".camera-modal-box")
-    .classList.toggle("camera-modal-box--result", isResult);
-
-  // Tombol dikunci selama AI bekerja
-  wasteEl("cameraAnalyzeBtn").disabled = step === "analyzing";
-  wasteEl("cameraRetakeBtn").disabled = step === "analyzing";
-
-  wasteEl("cameraSubtitle").textContent = WASTE_STEP_TEXT[step];
-}
-
-/* ---------- Kamera ---------- */
-
-function cameraStartErrorMessage(error) {
-  switch (error && error.name) {
-    case "NotAllowedError":
-    case "SecurityError":
-      return "Izin kamera ditolak. Izinkan kamera di pengaturan browser lalu buka ulang kamera, atau pilih foto dari galeri.";
-    case "NotFoundError":
-    case "OverconstrainedError":
-      return "Kamera tidak ditemukan di perangkat ini. Pilih foto dari galeri sebagai gantinya.";
-    case "NotReadableError":
-      return "Kamera sedang dipakai aplikasi lain. Tutup aplikasi tersebut lalu buka ulang kamera.";
-    default:
-      return "Kamera tidak dapat dibuka. Pilih foto dari galeri sebagai gantinya.";
-  }
-}
-
-function stopWasteCamera() {
-  if (wasteCameraStream) {
-    wasteCameraStream.getTracks().forEach(function (track) {
-      track.stop();
-    });
-    wasteCameraStream = null;
-  }
-  wasteEl("wasteCameraVideo").srcObject = null;
-  wasteEl("cameraCaptureBtn").disabled = true;
-}
-
-async function startWasteCamera() {
-  stopWasteCamera();
-
-  // getUserMedia hanya ada di HTTPS atau localhost
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    showCameraError(
-      window.isSecureContext
-        ? "Browser ini tidak mendukung akses kamera. Pilih foto dari galeri sebagai gantinya."
-        : "Kamera hanya bisa dibuka lewat HTTPS atau localhost. Pilih foto dari galeri, atau buka website lewat localhost/HTTPS.",
-    );
-    return;
-  }
-
-  try {
-    // 1) Coba paksa kamera sesuai pilihan (paling akurat di HP).
-    // 2) Kalau perangkat menolak (mis. laptop 1 kamera), pakai "ideal".
-    let stream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { exact: wasteCameraFacing } },
-        audio: false,
-      });
-    } catch (exactError) {
-      if (
-        exactError &&
-        (exactError.name === "OverconstrainedError" ||
-          exactError.name === "NotFoundError" ||
-          exactError.name === "ConstraintNotSatisfiedError")
-      ) {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: wasteCameraFacing } },
-          audio: false,
-        });
-      } else {
-        throw exactError;
-      }
-    }
-
-    // Pengguna sudah menutup modal saat menunggu izin: matikan kamera lagi.
-    if (!wasteEl("wasteCameraModal").classList.contains("open")) {
-      stream.getTracks().forEach(function (track) {
-        track.stop();
-      });
-      return;
-    }
-
-    wasteCameraStream = stream;
-    wasteEl("wasteCameraVideo").srcObject = stream;
-    wasteEl("cameraCaptureBtn").disabled = false;
-
-    // Kamera depan ditampilkan seperti cermin supaya terasa natural.
-    applyWasteCameraMirror();
-
-    // Setelah izin diberikan, daftar kamera bisa dibaca dengan benar,
-    // jadi tombol "ganti kamera" baru ditampilkan di sini.
-    refreshCameraSwitchButton();
-  } catch (error) {
-    console.error("Camera error:", error);
-    showCameraError(cameraStartErrorMessage(error));
-  }
-}
-
-/* ---------- Ganti kamera depan / belakang ---------- */
-
-// Video kamera depan dibalik horizontal (efek cermin) agar tidak membingungkan.
-function applyWasteCameraMirror() {
-  wasteEl("wasteCameraVideo").classList.toggle(
-    "camera-mirrored",
-    wasteCameraFacing === "user",
-  );
-}
-
-// Perbarui teks + tampil/sembunyinya tombol ganti kamera.
-async function refreshCameraSwitchButton() {
-  const button = wasteEl("cameraSwitchBtn");
-  if (!button) return;
-
-  button.textContent =
-    wasteCameraFacing === "environment"
-      ? "🔄 Kamera Depan"
-      : "🔄 Kamera Belakang";
-
-  let hasMultipleCameras = false;
-
-  try {
-    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      hasMultipleCameras =
-        devices.filter(function (device) {
-          return device.kind === "videoinput";
-        }).length > 1;
-    }
-  } catch (error) {
-    hasMultipleCameras = false;
-  }
-
-  // Di sebagian HP daftar kamera belum lengkap sebelum izin diberikan,
-  // jadi di perangkat sentuh tombolnya tetap ditampilkan.
-  if (!hasMultipleCameras && isTouchDevice()) hasMultipleCameras = true;
-
-  button.hidden = !hasMultipleCameras;
-}
-
-function isTouchDevice() {
-  return (
-    (navigator.maxTouchPoints || 0) > 0 ||
-    "ontouchstart" in window ||
-    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "")
-  );
-}
-
-// Tombol "Kamera Depan / Kamera Belakang"
-async function switchWasteCamera() {
-  if (wasteCameraSwitching) return; // hindari klik beruntun
-
-  const button = wasteEl("cameraSwitchBtn");
-  const previousFacing = wasteCameraFacing;
-
-  wasteCameraSwitching = true;
-  if (button) button.disabled = true;
-
-  wasteCameraFacing = previousFacing === "environment" ? "user" : "environment";
-  hideCameraError();
-
-  await startWasteCamera();
-
-  // Kalau kamera sisi lain gagal dibuka, kembalikan ke kamera sebelumnya.
-  if (!wasteCameraStream) {
-    wasteCameraFacing = previousFacing;
-    await startWasteCamera();
-    if (wasteCameraStream) {
-      showCameraError(
-        "Perangkat ini hanya punya satu kamera yang bisa dipakai, jadi kamera sebelumnya dipakai kembali.",
-      );
-    }
-  }
-
-  applyWasteCameraMirror();
-  refreshCameraSwitchButton();
-
-  if (button) button.disabled = false;
-  wasteCameraSwitching = false;
-}
-
-function openWasteCamera() {
-  wasteEl("wasteCameraModal").classList.add("open");
-
-  wasteCameraFacing = "environment"; // selalu mulai dari kamera belakang
-  applyWasteCameraMirror();
-  refreshCameraSwitchButton();
-
-  wastePhotoReady = false;
-  hideCameraError();
-  setCameraStep("live");
-
-  // Mulai memuat model di latar belakang supaya tombol Analisis cepat.
-  getWasteModel().catch(function () {
-    // Error ditampilkan nanti saat pengguna menekan Analisis.
-  });
-
-  startWasteCamera();
-}
-
-function closeWasteCamera() {
-  wasteAnalysisToken++; // batalkan analisis yang mungkin masih berjalan
-  stopWasteCamera();
-  wasteEl("wasteCameraModal").classList.remove("open");
-}
-
-// Tombol "Ambil Foto" (Capture): salin frame video ke canvas.
-function captureWastePhoto() {
-  const video = wasteEl("wasteCameraVideo");
-  const canvas = wasteEl("wasteCameraCanvas");
-
-  if (!video.videoWidth || !video.videoHeight) {
-    showCameraError("Kamera belum siap. Tunggu sebentar lalu coba lagi.");
-    return;
-  }
-
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-
-  const context = canvas.getContext("2d");
-
-  // Kamera depan tampil seperti cermin, jadi fotonya ikut dibalik
-  // supaya hasil jepretan sama persis dengan yang dilihat pengguna.
-  context.save();
-  if (wasteCameraFacing === "user") {
-    context.translate(canvas.width, 0);
-    context.scale(-1, 1);
-  }
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  context.restore();
-
-  // Simpan foto sebagai data URL (dikompresi) supaya bisa ikut disimpan ke
-  // riwayat penjemputan (localStorage) saat pengajuan dibuat.
-  lastWastePhotoDataUrl = canvas.toDataURL("image/jpeg", 0.72);
-
-  stopWasteCamera(); // matikan kamera setelah jepret (hemat baterai & privasi)
-  wastePhotoReady = true;
-  hideCameraError();
-  setCameraStep("captured");
-}
-
-// Tombol "Ulangi Foto" (Retake): kembali ke kamera.
-function retakeWastePhoto() {
-  wasteAnalysisToken++;
-  wastePhotoReady = false;
-  lastWastePhotoDataUrl = null;
-  hideCameraError();
-  setCameraStep("live");
-  startWasteCamera();
-}
-
-/* ---------- Pilih foto dari galeri (cadangan / untuk uji coba) ---------- */
-
-function openWasteGallery() {
-  wasteEl("wasteCameraFile").click();
-}
-
-function handleWasteGalleryPick(event) {
-  const file = event.target.files && event.target.files[0];
-  event.target.value = ""; // supaya file yang sama bisa dipilih lagi
-  if (!file) return;
-
-  if (!file.type || file.type.indexOf("image/") !== 0) {
-    showCameraError("File yang dipilih bukan gambar.");
-    return;
-  }
-
-  const url = URL.createObjectURL(file); // alamat sementara, hanya di browser
-  const image = new Image();
-
-  image.onload = function () {
-    // Kecilkan foto yang sangat besar agar analisis tetap cepat.
-    const maxSide = 1280;
-    const scale = Math.min(
-      1,
-      maxSide / Math.max(image.naturalWidth, image.naturalHeight),
-    );
-    const canvas = wasteEl("wasteCameraCanvas");
-    canvas.width = Math.round(image.naturalWidth * scale);
-    canvas.height = Math.round(image.naturalHeight * scale);
-    canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
-    URL.revokeObjectURL(url);
-
-    // Simpan foto sebagai data URL (dikompresi) supaya bisa ikut disimpan
-    // ke riwayat penjemputan (localStorage) saat pengajuan dibuat.
-    lastWastePhotoDataUrl = canvas.toDataURL("image/jpeg", 0.72);
-
-    stopWasteCamera();
-    wastePhotoReady = true;
-    hideCameraError();
-    setCameraStep("captured");
-  };
-
-  image.onerror = function () {
-    URL.revokeObjectURL(url);
-    showCameraError("Foto tidak dapat dibaca. Coba foto lain.");
-  };
-
-  image.src = url;
-}
-
-/* ---------- Tombol "Analisis" ---------- */
-
-async function analyzeWastePhoto() {
-  if (!wastePhotoReady) return;
-
-  const token = ++wasteAnalysisToken;
-  hideCameraError();
-  setCameraStep("analyzing");
-
-  try {
-    const bundle = await getWasteModel();
-    const predictions = await classifyWasteCanvas(
-      bundle,
-      wasteEl("wasteCameraCanvas"),
-    );
-
-    // Pengguna sudah menutup modal / mengulang foto: abaikan hasil lama.
-    if (token !== wasteAnalysisToken) return;
-
-    lastWasteDetection = predictions[0];
-    renderWasteResult(predictions);
-    updateJemputVerification();
-    setCameraStep("result");
-  } catch (error) {
-    if (token !== wasteAnalysisToken) return;
-    console.error("Analisis AI gagal:", error);
-    showCameraError(wasteErrorMessage(error));
-    setCameraStep("captured");
-  }
-}
-
-/* ---------- Menampilkan hasil ---------- */
-
-function formatWastePercent(probability) {
-  return (probability * 100).toFixed(1) + "%";
-}
-
-function getWasteCategoryInfo(prediction) {
-  const known = WASTE_CATEGORIES[prediction.key];
-  if (known) return known;
-
-  // Label di metadata.json tidak cocok dengan 5 kategori ReLoop.
-  return {
-    name: String(prediction.label),
-    english: String(prediction.label),
-    emoji: "❔",
-    declared: [],
-    disposalTitle: "Kategori tidak dikenali",
-    disposalText:
-      "Nama kelas di metadata.json tidak cocok dengan 5 kategori ReLoop. Periksa nama kelas saat melatih model.",
-  };
-}
-
-function renderWasteResult(predictions) {
-  const top = predictions[0];
-  const info = getWasteCategoryInfo(top);
-
-  wasteEl("aiResultEmoji").textContent = info.emoji;
-  wasteEl("aiResultLabel").textContent = info.name.toUpperCase();
-  wasteEl("aiResultEnglish").textContent = info.english;
-  wasteEl("aiResultConfidence").textContent = formatWastePercent(
-    top.probability,
-  );
-  wasteEl("aiConfidenceFill").style.width =
-    (top.probability * 100).toFixed(1) + "%";
-  wasteEl("aiLowConfidenceNote").hidden =
-    top.probability >= WASTE_LOW_CONFIDENCE;
-  wasteEl("aiDisposalTitle").textContent = info.disposalTitle;
-  wasteEl("aiDisposalText").textContent = info.disposalText;
-
-  // Daftar skor semua kategori
-  const list = wasteEl("aiScoreList");
-  list.innerHTML = "";
-
-  predictions.forEach(function (prediction) {
-    const item = document.createElement("li");
-
-    const name = document.createElement("span");
-    name.textContent = getWasteCategoryInfo(prediction).name;
-
-    const track = document.createElement("span");
-    track.className = "ai-score-track";
-    const fill = document.createElement("span");
-    fill.style.width = (prediction.probability * 100).toFixed(1) + "%";
-    track.appendChild(fill);
-
-    const value = document.createElement("b");
-    value.textContent = formatWastePercent(prediction.probability);
-
-    item.appendChild(name);
-    item.appendChild(track);
-    item.appendChild(value);
-    list.appendChild(item);
-  });
-}
-
-// Kotak "Verifikasi Sampah dengan Kamera" di halaman Jemput Sampah:
-// membandingkan hasil AI dengan jenis sampah yang dipilih pengguna.
-function updateJemputVerification() {
-  const box = wasteEl("cameraResult");
-  if (!box || !lastWasteDetection) return;
-
-  const info = getWasteCategoryInfo(lastWasteDetection);
-  const percent = formatWastePercent(lastWasteDetection.probability);
-  const declaredType = wasteEl("jemputJenis").value;
-  const canCompare = info.declared.length > 0;
-  const matches = info.declared.indexOf(declaredType) !== -1;
-
-  let text;
-  if (!canCompare) {
-    text = "Kategori hasil AI tidak dikenali oleh ReLoop.";
-  } else if (matches) {
-    text = "Sesuai dengan jenis sampah yang Anda pilih (" + declaredType + ").";
-  } else {
-    text =
-      "Berbeda dari jenis yang Anda pilih (" +
-      declaredType +
-      "). Periksa kembali sebelum mengajukan.";
-  }
-
-  if (lastWasteDetection.probability < WASTE_LOW_CONFIDENCE) {
-    text += " Keyakinan AI rendah, sebaiknya foto ulang.";
-  }
-
-  const good = canCompare && matches;
-  box.hidden = false;
-  box.classList.toggle("camera-result--warn", !good);
-  wasteEl("cameraStatusIcon").textContent = good ? "✓" : "!";
-  wasteEl("cameraResultTitle").textContent =
-    "AI mendeteksi: " + info.name + " (" + percent + ")";
-  wasteEl("cameraResultText").textContent = text;
-}
-
-/* ---------- Pemasangan event ---------- */
-
-function initWasteCameraUI() {
-  const modal = wasteEl("wasteCameraModal");
-  if (!modal) return;
-
-  // Klik area gelap di luar kotak untuk menutup modal.
-  modal.addEventListener("click", function (event) {
-    if (event.target === modal) closeWasteCamera();
-  });
-
-  const jemputForm = wasteEl("jemputForm");
-  if (jemputForm) {
-    // Setelah pengajuan (form.reset), kosongkan hasil verifikasi lama.
-    jemputForm.addEventListener("reset", function () {
-      lastWasteDetection = null;
-      lastWastePhotoDataUrl = null;
-      const box = wasteEl("cameraResult");
-      if (box) {
-        box.hidden = true;
-        box.classList.remove("camera-result--warn");
-      }
-    });
-  }
-
-  // Jika pengguna mengganti jenis sampah setelah analisis, cocokkan ulang.
-  const jenisSelect = wasteEl("jemputJenis");
-  if (jenisSelect) {
-    jenisSelect.addEventListener("change", updateJemputVerification);
-  }
-}
-
-initWasteCameraUI();
 
 /* =========================================
    PROFIL RELOOP (KLIK LOGO DI NAVBAR)
