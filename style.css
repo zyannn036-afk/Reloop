@@ -1284,6 +1284,115 @@ img {
   border-radius: 10px;
 }
 
+/* -----------------------------------------
+   HASIL PENCARIAN: SLIDER HORIZONTAL
+   -----------------------------------------
+   #managerList di-scroll ke samping (bukan ditumpuk
+   ke bawah). Setiap .manager-result jadi kartu dengan
+   lebar tetap yang berjejer, bisa digeser lewat drag,
+   scroll, atau tombol panah di .manager-list-wrapper.
+----------------------------------------- */
+
+.manager-list-wrapper {
+  position: relative;
+}
+
+#managerList {
+  display: flex;
+
+  gap: 16px;
+
+  overflow-x: auto;
+
+  scroll-behavior: smooth;
+
+  scroll-snap-type: x proximity;
+
+  padding: 4px 4px 16px;
+
+  margin: 0 -4px;
+
+  scrollbar-width: thin;
+
+  scrollbar-color: #087153 #e5f2ed;
+}
+
+#managerList::-webkit-scrollbar {
+  height: 8px;
+}
+
+#managerList::-webkit-scrollbar-track {
+  background: #e5f2ed;
+
+  border-radius: 10px;
+}
+
+#managerList::-webkit-scrollbar-thumb {
+  background: #087153;
+
+  border-radius: 10px;
+}
+
+.manager-slide-btn {
+  position: absolute;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 40px;
+
+  height: 40px;
+
+  border-radius: 50%;
+
+  border: 1px solid #dfebe6;
+
+  background: white;
+
+  color: #087153;
+
+  font-size: 20px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  z-index: 2;
+}
+
+.manager-slide-btn:hover {
+  background: #087153;
+
+  color: white;
+}
+
+.manager-slide-btn:disabled {
+  opacity: 0.35;
+
+  cursor: default;
+
+  background: white;
+
+  color: #087153;
+}
+
+.manager-slide-btn--prev {
+  left: -14px;
+}
+
+.manager-slide-btn--next {
+  right: -14px;
+}
+
 .manager-result {
   background: white;
 
@@ -1293,21 +1402,37 @@ img {
 
   padding: 12px;
 
-  margin-bottom: 12px;
+  display: flex;
 
-  display: grid;
+  flex-direction: column;
 
-  grid-template-columns: 130px 1.4fr 1fr 150px;
+  gap: 10px;
 
-  gap: 15px;
+  flex: 0 0 280px;
 
-  align-items: center;
+  width: 280px;
+
+  scroll-snap-align: start;
 }
 
 .manager-result > img {
-  height: 115px;
+  width: 100%;
+
+  height: 150px;
 
   border-radius: 12px;
+
+  object-fit: cover;
+}
+
+.manager-info,
+.manager-services,
+.manager-actions {
+  width: 100%;
+}
+
+.manager-actions {
+  margin-top: auto;
 }
 
 .distance {
@@ -2342,12 +2467,9 @@ footer p {
   }
 
   .manager-result {
-    grid-template-columns: 100px 1fr;
-  }
+    flex: 0 0 240px;
 
-  .manager-services,
-  .manager-actions {
-    grid-column: 2;
+    width: 240px;
   }
 }
 
@@ -2419,12 +2541,25 @@ footer p {
   }
 
   .manager-result {
-    grid-template-columns: 1fr;
+    flex: 0 0 82vw;
+
+    width: 82vw;
   }
 
-  .manager-services,
-  .manager-actions {
-    grid-column: auto;
+  .manager-slide-btn {
+    width: 34px;
+
+    height: 34px;
+
+    font-size: 17px;
+  }
+
+  .manager-slide-btn--prev {
+    left: -8px;
+  }
+
+  .manager-slide-btn--next {
+    right: -8px;
   }
 
   .product-grid.large {
@@ -3151,6 +3286,344 @@ footer p {
 
 @media (max-width: 600px) {
   .rp-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================
+   HALAMAN PRODUKSI - ALUR PRODUKSI
+   -----------------------------------------
+   Alur: Rumah Tangga -> Bank Sampah ->
+   Pihak Produksi -> Produk. Setiap tahap
+   punya gambar + penjelasan singkat.
+========================================= */
+
+.production-flow-section {
+  padding-top: 10px;
+}
+
+/* ---- Tabs (nomor tahap di atas slider) ---- */
+
+.production-tabs {
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 22px;
+}
+
+.production-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  padding: 4px 6px;
+
+  flex-shrink: 0;
+}
+
+.production-tab-number {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 50%;
+
+  background: #eaf4ef;
+  color: #71807b;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px solid transparent;
+
+  transition: 0.2s;
+}
+
+.production-tab-label {
+  color: #71807b;
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  transition: 0.2s;
+}
+
+.production-tab.active .production-tab-number {
+  background: #087153;
+  color: white;
+
+  border-color: #bfe3d3;
+
+  box-shadow: 0 0 0 4px rgba(8, 113, 83, 0.12);
+}
+
+.production-tab.active .production-tab-label {
+  color: #087153;
+}
+
+.production-tab-line {
+  flex: 1;
+  min-width: 14px;
+  height: 2px;
+
+  background: #e1ebe7;
+
+  margin: 0 4px;
+  margin-bottom: 22px;
+}
+
+/* ---- Slider ---- */
+
+.production-slider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.production-slider-viewport {
+  flex: 1;
+  overflow: hidden;
+
+  border-radius: 22px;
+}
+
+.production-slider-track {
+  display: flex;
+
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.production-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0;
+
+  background: white;
+  border: 1px solid #e1ebe7;
+  border-radius: 22px;
+
+  overflow: hidden;
+
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
+}
+
+.production-slide-image {
+  position: relative;
+
+  min-height: 220px;
+
+  background: #eaf4ef;
+}
+
+.production-slide-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+.production-slide-body {
+  padding: 28px 30px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 10px;
+}
+
+.production-slide-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  align-self: flex-start;
+
+  background: #eaf4ef;
+  color: #087153;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  padding: 5px 12px 5px 5px;
+  border-radius: 999px;
+}
+
+.production-slide-badge .production-step-number {
+  width: 22px;
+  height: 22px;
+
+  border-radius: 50%;
+
+  background: #087153;
+  color: white;
+
+  font-size: 12px;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.production-slide-body h3 {
+  color: #163f37;
+  font-size: 22px;
+}
+
+.production-slide-body p {
+  color: #71807b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.production-slide-clickable {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.production-slide-clickable:hover {
+  box-shadow: 0 8px 22px rgba(8, 113, 83, 0.14);
+  border-color: #bfe3d3;
+}
+
+.production-slide-clickable:hover .production-slide-image img {
+  transform: scale(1.03);
+}
+
+.production-slide-image img {
+  transition: transform 0.3s ease;
+}
+
+.production-slide-cta {
+  align-self: flex-start;
+
+  color: #087153;
+  font-size: 13px;
+  font-weight: 700;
+
+  margin-top: 4px;
+}
+
+.production-slider-nav {
+  flex-shrink: 0;
+
+  width: 44px;
+  height: 44px;
+
+  border-radius: 50%;
+
+  border: 1px solid #e1ebe7;
+  background: white;
+  color: #087153;
+
+  font-size: 20px;
+  line-height: 1;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+
+  transition: 0.2s;
+}
+
+.production-slider-nav:hover {
+  background: #087153;
+  color: white;
+
+  transform: scale(1.06);
+}
+
+/* ---- Dots ---- */
+
+.production-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 16px;
+}
+
+.production-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #d7e6df;
+  border: none;
+  cursor: pointer;
+
+  padding: 0;
+
+  transition: 0.2s;
+}
+
+.production-dot.active {
+  width: 24px;
+  border-radius: 999px;
+
+  background: #087153;
+}
+
+.production-product-section {
+  padding-top: 0;
+}
+
+.production-product-grid .shop-product {
+  cursor: default;
+}
+
+.production-product-grid .shop-product button {
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .production-slide {
+    grid-template-columns: 1fr;
+  }
+
+  .production-slide-image {
+    min-height: 160px;
+  }
+
+  .production-slide-body {
+    padding: 20px;
+  }
+
+  .production-tab-label {
+    display: none;
+  }
+
+  .production-slider-nav {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .production-product-grid {
     grid-template-columns: 1fr;
   }
 }
