@@ -78,10 +78,6 @@ function showPage(pageId) {
     renderJemputRekomendasi();
     renderRiwayatBatches();
     renderPanelPengelola();
-
-    // Halaman baru saja ditampilkan, jadi lebar #managerList belum
-    // pasti akurat sampai layout selesai dihitung ulang oleh browser.
-    setTimeout(updateManagerSlideButtons, 200);
   } else if (pageId === "dashboard") {
     renderDashboard();
   } else if (pageId === "portal-pengelola") {
@@ -240,7 +236,7 @@ function filterManager(category) {
     const matches = category === "Semua" || categories.includes(categoryLower);
 
     if (matches) {
-      manager.style.display = "flex";
+      manager.style.display = "grid";
 
       found = true;
     } else {
@@ -255,8 +251,6 @@ function filterManager(category) {
   } else {
     notAvailable.style.display = "block";
   }
-
-  updateManagerSlideButtons();
 }
 
 /* =========================================
@@ -347,32 +341,17 @@ const wasteSearch = document.getElementById("wasteSearch");
 
 if (wasteSearch) {
   wasteSearch.addEventListener("input", function () {
-    const search = wasteSearch.value.trim().toLowerCase();
+    const search = wasteSearch.value.toLowerCase();
 
-    const managers = document.querySelectorAll("#managerList .manager-result");
+    const managers = document.querySelectorAll(".manager-result");
 
     let found = false;
 
     managers.forEach(function (manager) {
-      // Cocokkan kata kunci dengan kategori sampah (mis. "plastik"),
-      // nama pengelola, DAN alamatnya, supaya pencarian benar-benar
-      // berguna dan tidak hanya terbatas pada kategori sampah.
-      const categories = (manager.dataset.category || "").toLowerCase();
+      const categories = manager.dataset.category.toLowerCase();
 
-      const nameEl = manager.querySelector(".manager-info h3");
-      const name = nameEl ? nameEl.textContent.toLowerCase() : "";
-
-      const addressEl = manager.querySelector(".manager-info p:last-child");
-      const address = addressEl ? addressEl.textContent.toLowerCase() : "";
-
-      const matches =
-        search === "" ||
-        categories.includes(search) ||
-        name.includes(search) ||
-        address.includes(search);
-
-      if (matches) {
-        manager.style.display = "flex";
+      if (categories.includes(search)) {
+        manager.style.display = "grid";
 
         found = true;
       } else {
@@ -383,72 +362,17 @@ if (wasteSearch) {
     const notAvailable = document.getElementById("notAvailable");
 
     if (search === "") {
+      managers.forEach(function (manager) {
+        manager.style.display = "grid";
+      });
+
       notAvailable.style.display = "none";
     } else if (!found) {
       notAvailable.style.display = "block";
     } else {
       notAvailable.style.display = "none";
     }
-
-    // Kembalikan slider ke posisi awal & perbarui status tombol panah
-    // setiap kali hasil pencarian berubah.
-    const list = document.getElementById("managerList");
-    if (list) list.scrollTo({ left: 0, behavior: "smooth" });
-
-    updateManagerSlideButtons();
   });
-}
-
-/* =========================================
-   SLIDER HASIL PENCARIAN PENGELOLA
-   -----------------------------------------
-   Menggeser #managerList ke samping (kiri/kanan)
-   sejauh kira-kira satu kartu, dipanggil oleh
-   tombol panah di .manager-list-wrapper.
-========================================= */
-
-function slideManagerList(direction) {
-  const list = document.getElementById("managerList");
-
-  if (!list) return;
-
-  const card = list.querySelector(".manager-result");
-
-  const cardWidth = card ? card.getBoundingClientRect().width : 280;
-
-  const gap = 16;
-
-  list.scrollBy({
-    left: direction * (cardWidth + gap),
-
-    behavior: "smooth",
-  });
-}
-
-// Aktif/nonaktifkan tombol panah tergantung posisi scroll saat ini,
-// supaya tombol "kiri" mati saat sudah di ujung kiri, begitu juga kanan.
-function updateManagerSlideButtons() {
-  const list = document.getElementById("managerList");
-  const prevBtn = document.getElementById("managerPrevBtn");
-  const nextBtn = document.getElementById("managerNextBtn");
-
-  if (!list || !prevBtn || !nextBtn) return;
-
-  const maxScroll = list.scrollWidth - list.clientWidth;
-
-  prevBtn.disabled = list.scrollLeft <= 2;
-  nextBtn.disabled = list.scrollLeft >= maxScroll - 2;
-}
-
-const managerListEl = document.getElementById("managerList");
-
-if (managerListEl) {
-  managerListEl.addEventListener("scroll", updateManagerSlideButtons);
-
-  window.addEventListener("resize", updateManagerSlideButtons);
-
-  // Set status awal tombol panah setelah semua kartu ter-render.
-  setTimeout(updateManagerSlideButtons, 200);
 }
 
 /* =========================================
@@ -771,45 +695,178 @@ function viewProductInPembelian(productName, category) {
 
 const sortManager = document.getElementById("sortManager");
 
-if (sortManager) {
-  sortManager.addEventListener("change", function () {
-    const value = sortManager.value;
+function sortManagerListBy(value) {
+  const list = document.getElementById("managerList");
 
-    const list = document.getElementById("managerList");
+  if (!list) return;
 
-    const managers = Array.from(list.querySelectorAll(".manager-result"));
+  const managers = Array.from(list.querySelectorAll(".manager-result"));
 
-    if (value === "rating") {
-      managers.sort(function (a, b) {
-        const ratingA = parseFloat(a.querySelector(".rating").textContent);
+  if (value === "rating") {
+    managers.sort(function (a, b) {
+      const ratingA = parseFloat(a.querySelector(".rating").textContent);
 
-        const ratingB = parseFloat(b.querySelector(".rating").textContent);
+      const ratingB = parseFloat(b.querySelector(".rating").textContent);
 
-        return ratingB - ratingA;
-      });
-    } else {
-      managers.sort(function (a, b) {
-        const distanceA = parseFloat(
-          a.querySelector(".distance").textContent.replace(",", "."),
-        );
-
-        const distanceB = parseFloat(
-          b.querySelector(".distance").textContent.replace(",", "."),
-        );
-
-        return distanceA - distanceB;
-      });
-    }
-
-    managers.forEach(function (manager) {
-      list.appendChild(manager);
+      return ratingB - ratingA;
     });
+  } else {
+    managers.sort(function (a, b) {
+      const distanceA = parseFloat(
+        a.querySelector(".distance").textContent.replace(",", "."),
+      );
 
-    list.scrollTo({ left: 0, behavior: "smooth" });
+      const distanceB = parseFloat(
+        b.querySelector(".distance").textContent.replace(",", "."),
+      );
 
-    updateManagerSlideButtons();
+      return distanceA - distanceB;
+    });
+  }
+
+  managers.forEach(function (manager) {
+    list.appendChild(manager);
   });
 }
+
+if (sortManager) {
+  sortManager.addEventListener("change", function () {
+    sortManagerListBy(sortManager.value);
+  });
+
+  // Urutkan berdasarkan jarak sejak awal, supaya kartu pertama di
+  // slide/carousel selalu tempat terdekat.
+  sortManagerListBy(sortManager.value || "distance");
+}
+
+/* =========================================
+   SLIDE / CAROUSEL HASIL PENCARIAN (ANDROID)
+   -----------------------------------------
+   Di layar sempit, #managerList jadi track horizontal (lihat
+   style.css). Dua tombol ‹ › di bawah ini menggeser satu kartu
+   per klik, dan titik-titik indikator + status tombol mengikuti
+   kartu mana yang sedang terlihat lewat MutationObserver, jadi
+   tetap sinkron walau daftar difilter/diurutkan/ditambah dari
+   fungsi lain.
+========================================= */
+function getVisibleManagerCards() {
+  const list = document.getElementById("managerList");
+
+  if (!list) return [];
+
+  return Array.from(list.querySelectorAll(".manager-result")).filter(
+    function (card) {
+      return card.style.display !== "none";
+    },
+  );
+}
+
+function slideManager(direction) {
+  const list = document.getElementById("managerList");
+
+  const cards = getVisibleManagerCards();
+
+  if (!list || !cards.length) return;
+
+  const cardWidth = cards[0].getBoundingClientRect().width + 14; // +gap
+
+  list.scrollBy({ left: direction * cardWidth, behavior: "smooth" });
+}
+
+function updateManagerCarouselUI() {
+  const list = document.getElementById("managerList");
+
+  const dotsWrap = document.getElementById("managerCarouselDots");
+
+  const prevBtn = document.getElementById("managerPrevBtn");
+
+  const nextBtn = document.getElementById("managerNextBtn");
+
+  if (!list) return;
+
+  const cards = getVisibleManagerCards();
+
+  if (dotsWrap) {
+    const currentDotCount = dotsWrap.children.length;
+
+    if (currentDotCount !== cards.length) {
+      dotsWrap.innerHTML = cards
+        .map(function () {
+          return "<span></span>";
+        })
+        .join("");
+    }
+  }
+
+  const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
+
+  if (!cards.length) {
+    if (prevBtn) prevBtn.disabled = true;
+
+    if (nextBtn) nextBtn.disabled = true;
+
+    return;
+  }
+
+  const listLeft = list.getBoundingClientRect().left;
+
+  let activeIndex = 0;
+
+  let smallestDiff = Infinity;
+
+  cards.forEach(function (card, index) {
+    const diff = Math.abs(card.getBoundingClientRect().left - listLeft);
+
+    if (diff < smallestDiff) {
+      smallestDiff = diff;
+
+      activeIndex = index;
+    }
+  });
+
+  dots.forEach(function (dot, index) {
+    dot.classList.toggle("active", index === activeIndex);
+  });
+
+  if (prevBtn) prevBtn.disabled = activeIndex === 0;
+
+  if (nextBtn) nextBtn.disabled = activeIndex === cards.length - 1;
+}
+
+(function initManagerCarousel() {
+  const list = document.getElementById("managerList");
+
+  if (!list) return;
+
+  let refreshQueued = false;
+
+  function queueRefresh() {
+    if (refreshQueued) return;
+
+    refreshQueued = true;
+
+    requestAnimationFrame(function () {
+      refreshQueued = false;
+
+      updateManagerCarouselUI();
+    });
+  }
+
+  list.addEventListener("scroll", queueRefresh);
+
+  window.addEventListener("resize", queueRefresh);
+
+  const observer = new MutationObserver(queueRefresh);
+
+  observer.observe(list, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["style"],
+  });
+
+  queueRefresh();
+})();
 
 /* =========================================
    PETA INTERAKTIF (LEAFLET + OPENSTREETMAP)
