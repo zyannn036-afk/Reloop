@@ -248,13 +248,93 @@ img {
 }
 
 /* =========================================
+   PESAN UTAMA + ALUR SINGKAT (HOME)
+========================================= */
+
+.home-message {
+  padding: 30px 7% 10px;
+}
+
+.home-message-heading h2 {
+  font-size: 26px;
+
+  margin-bottom: 8px;
+}
+
+.home-message-heading p {
+  color: #71807b;
+
+  max-width: 700px;
+
+  margin-bottom: 20px;
+}
+
+.home-steps {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 14px;
+}
+
+.home-step {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  padding: 16px;
+
+  background: white;
+
+  border: 1px solid #e1ebe7;
+
+  border-radius: 14px;
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+.home-step b {
+  width: 28px;
+
+  height: 28px;
+
+  border-radius: 50%;
+
+  background: #087153;
+
+  color: white;
+
+  font-size: 13px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.home-step strong {
+  color: #163f37;
+
+  font-size: 14px;
+}
+
+.home-step span {
+  color: #71807b;
+
+  font-size: 12px;
+}
+
+/* =========================================
    QUICK MENU
 ========================================= */
 
 .quick-menu {
   display: grid;
 
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 
   gap: 15px;
 
@@ -472,14 +552,6 @@ img {
   font-size: 11px;
 }
 
-/* Tag "Anorganik (Umum)" untuk pengelola yang menerima semua jenis
-   sampah anorganik dalam satu tempat (mis. Bank Sampah). */
-.tags span.tag-general {
-  background: #0c674f;
-  color: #ffffff;
-  font-weight: bold;
-}
-
 /* =========================================
    BUTTONS
 ========================================= */
@@ -518,7 +590,7 @@ img {
 .waste-grid {
   display: grid;
 
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 
   gap: 10px;
 }
@@ -1316,7 +1388,7 @@ img {
 .education-grid {
   display: grid;
 
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 
   gap: 20px;
 }
@@ -1364,6 +1436,88 @@ img {
   color: #087153;
 
   font-weight: bold;
+}
+
+/* Kode Daur Ulang Plastik (1-7) */
+
+.recycle-code-section {
+  margin-top: 35px;
+}
+
+.recycle-code-section h3 {
+  font-size: 18px;
+
+  margin-bottom: 8px;
+}
+
+.recycle-code-section > p {
+  color: #71807b;
+
+  font-size: 13px;
+
+  margin-bottom: 18px;
+
+  max-width: 640px;
+}
+
+.recycle-code-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 14px;
+}
+
+.recycle-code-card {
+  background: white;
+
+  border: 1px solid #e0ebe7;
+
+  border-radius: 15px;
+
+  padding: 16px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+.recycle-code-number {
+  width: 30px;
+
+  height: 30px;
+
+  border-radius: 50%;
+
+  background: #087153;
+
+  color: white;
+
+  font-weight: bold;
+
+  font-size: 14px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.recycle-code-card strong {
+  color: #163f37;
+
+  font-size: 14px;
+}
+
+.recycle-code-card small {
+  color: #71807b;
+
+  font-size: 12px;
 }
 
 .journal-section {
@@ -1519,109 +1673,6 @@ img {
   padding: 10px;
 
   border-radius: 20px;
-}
-
-/* =========================================
-   PRODUK
-========================================= */
-
-.product-learning {
-  padding: 45px 7%;
-}
-
-.product-intro {
-  margin-bottom: 25px;
-}
-
-.product-intro p {
-  color: #71807b;
-}
-
-.product-learning-grid {
-  display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 20px;
-}
-
-.product-learning-grid article {
-  background: white;
-
-  border-radius: 18px;
-
-  overflow: hidden;
-
-  padding-bottom: 20px;
-
-  border: 1px solid #dfebe6;
-}
-
-.product-learning-grid img {
-  height: 220px;
-}
-
-.product-learning-grid h3,
-.product-learning-grid p,
-.product-learning-grid button {
-  margin-left: 18px;
-  margin-right: 18px;
-}
-
-.product-learning-grid h3 {
-  margin-top: 15px;
-}
-
-.product-learning-grid p {
-  font-size: 13px;
-
-  color: #71807b;
-
-  margin-top: 5px;
-}
-
-.product-learning-grid button {
-  margin-top: 15px;
-
-  background: #087153;
-
-  color: white;
-
-  border: none;
-
-  padding: 10px 18px;
-
-  border-radius: 20px;
-}
-
-.self-making {
-  margin-top: 45px;
-
-  background: #eaf4ef;
-
-  border-radius: 20px;
-
-  padding: 30px;
-}
-
-.self-making p {
-  color: #71807b;
-
-  margin: 8px 0 15px;
-}
-
-.self-making button {
-  background: white;
-
-  border: 1px solid #c5d9d1;
-
-  padding: 10px 20px;
-
-  border-radius: 20px;
-
-  margin-right: 8px;
-
-  color: #176b58;
 }
 
 /* =========================================
@@ -2080,22 +2131,6 @@ footer p {
   margin-bottom: 12px;
 }
 
-/* Foto verifikasi yang tersimpan bersama batch, ditampilkan di riwayat
-   penjemputan maupun panel verifikasi pengelola. */
-.batch-card-photo {
-  margin: -14px -14px 10px -14px;
-  border-radius: 14px 14px 0 0;
-  overflow: hidden;
-  max-height: 160px;
-}
-
-.batch-card-photo img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  display: block;
-}
-
 .batch-card-top {
   display: flex;
   justify-content: space-between;
@@ -2302,10 +2337,6 @@ footer p {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .waste-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
   .manager-page {
     grid-template-columns: 1fr;
   }
@@ -2361,9 +2392,16 @@ footer p {
 
   .quick-menu,
   .product-grid,
-  .education-grid,
-  .product-learning-grid {
+  .education-grid {
     grid-template-columns: 1fr;
+  }
+
+  .home-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .recycle-code-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .home-manager-layout,
@@ -2877,379 +2915,6 @@ footer p {
     right: 15px;
     max-width: none;
   }
-}
-
-/* =========================================
-   VERIFIKASI KAMERA SAMPAH
-========================================= */
-
-.camera-verification-box {
-  background: #eef7f3;
-  border: 1px solid #d5e7df;
-  border-radius: 15px;
-  padding: 15px;
-  margin-top: 2px;
-}
-
-.camera-verification-box strong {
-  color: #096047;
-}
-
-.camera-verification-box p {
-  color: #71807b;
-  font-size: 12px;
-  margin: 5px 0 12px;
-}
-
-.camera-open-button {
-  margin-top: 2px;
-}
-
-.camera-result {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-  padding: 10px;
-  background: white;
-  border-radius: 10px;
-  border: 1px solid #d5e7df;
-}
-
-.camera-result > span {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #087153;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  flex-shrink: 0;
-}
-
-.camera-result p {
-  margin: 2px 0 0;
-}
-
-.camera-modal-box {
-  max-width: 650px;
-}
-
-.camera-preview-wrap {
-  width: 100%;
-  background: #10231e;
-  border-radius: 15px;
-  overflow: hidden;
-  margin-bottom: 15px;
-}
-
-.camera-preview-wrap video {
-  width: 100%;
-  max-height: 420px;
-  display: block;
-  object-fit: cover;
-}
-
-.camera-controls {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap; /* tombol turun ke baris baru di layar HP */
-}
-
-.camera-controls button {
-  flex: 1 1 140px;
-}
-
-/* Kamera depan ditampilkan seperti cermin */
-.camera-preview-wrap video.camera-mirrored {
-  transform: scaleX(-1);
-}
-
-.camera-detection-demo {
-  margin-top: 15px;
-  padding: 14px;
-  background: #eaf4ef;
-  border-radius: 12px;
-  border: 1px solid #d5e7df;
-}
-
-.camera-demo-badge {
-  display: inline-block;
-  background: #087153;
-  color: white;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  margin-bottom: 6px;
-}
-
-.camera-detection-demo strong,
-.camera-detection-demo p {
-  display: block;
-}
-
-.camera-detection-demo p {
-  color: #60736d;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-@media (max-width: 600px) {
-  .camera-modal-box {
-    padding: 18px;
-  }
-
-  .camera-controls {
-    flex-direction: column;
-  }
-}
-
-/* =========================================
-   AI DETEKSI SAMPAH (TAMBAHAN)
-   Memakai warna & gaya yang sama dengan
-   bagian kamera di atas.
-========================================= */
-
-/* Atribut "hidden" harus selalu menang atas display:flex/block
-   di area kamera (kotak verifikasi & modal). */
-.camera-verification-box [hidden],
-.camera-modal-box [hidden] {
-  display: none !important;
-}
-
-.camera-preview-wrap {
-  position: relative;
-  min-height: 180px;
-}
-
-.camera-preview-wrap canvas {
-  width: 100%;
-  max-height: 420px;
-  display: block;
-  object-fit: cover;
-}
-
-/* Lapisan "AI sedang menganalisis" di atas foto */
-.camera-loading {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: rgba(16, 35, 30, 0.72);
-  color: white;
-  font-size: 14px;
-}
-
-.camera-spinner {
-  width: 34px;
-  height: 34px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: cameraSpin 0.8s linear infinite;
-}
-
-@keyframes cameraSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .camera-spinner {
-    animation-duration: 2.4s;
-  }
-}
-
-.camera-controls button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.camera-error {
-  margin-bottom: 12px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: #fbe4e4;
-  color: #a53838;
-  font-size: 13px;
-}
-
-/* Hasil di kotak "Verifikasi Sampah" (halaman Jemput):
-   warna kuning jika hasil AI berbeda dari jenis yang dipilih */
-.camera-result--warn > span {
-  background: #b7791f;
-}
-
-/* --- Kartu hasil klasifikasi AI --- */
-
-.ai-result {
-  margin-top: 15px;
-  padding: 16px;
-  background: #eaf4ef;
-  border: 1px solid #d5e7df;
-  border-radius: 15px;
-}
-
-.ai-result-caption {
-  color: #71807b;
-  font-size: 12px;
-}
-
-.ai-result-main {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 8px 0 12px;
-}
-
-.ai-result-emoji {
-  font-size: 34px;
-  line-height: 1;
-}
-
-.ai-result-name {
-  flex: 1;
-  min-width: 0;
-}
-
-.ai-result-label {
-  display: block;
-  color: #096047;
-  font-size: 20px;
-  line-height: 1.2;
-}
-
-.ai-result-english {
-  color: #71807b;
-  font-size: 12px;
-}
-
-.ai-result-confidence {
-  text-align: right;
-}
-
-.ai-result-confidence small {
-  display: block;
-  color: #71807b;
-  font-size: 12px;
-}
-
-.ai-result-confidence strong {
-  color: #087153;
-  font-size: 22px;
-}
-
-.ai-confidence-bar {
-  height: 8px;
-  background: #d5e7df;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.ai-confidence-bar div {
-  height: 100%;
-  width: 0;
-  background: #087153;
-  border-radius: 8px;
-  transition: width 0.4s ease;
-}
-
-.ai-warning {
-  margin-top: 12px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  background: #fdf1de;
-  color: #8a5a12;
-  font-size: 12px;
-}
-
-.ai-disposal {
-  margin-top: 14px;
-  padding: 12px;
-  background: white;
-  border: 1px solid #d5e7df;
-  border-radius: 12px;
-}
-
-.ai-disposal small {
-  color: #71807b;
-  font-size: 12px;
-}
-
-.ai-disposal strong {
-  display: block;
-  margin-top: 2px;
-  color: #096047;
-}
-
-.ai-disposal p {
-  margin-top: 4px;
-  color: #60736d;
-  font-size: 13px;
-}
-
-.ai-scores {
-  margin-top: 12px;
-  font-size: 13px;
-}
-
-.ai-scores summary {
-  cursor: pointer;
-  color: #176a57;
-}
-
-.ai-score-list {
-  list-style: none;
-  display: grid;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.ai-score-list li {
-  display: grid;
-  grid-template-columns: 120px 1fr 52px;
-  gap: 8px;
-  align-items: center;
-}
-
-.ai-score-track {
-  height: 6px;
-  background: #d5e7df;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.ai-score-track span {
-  display: block;
-  height: 100%;
-  background: #087153;
-}
-
-.ai-score-list b {
-  text-align: right;
-  font-weight: normal;
-  color: #60736d;
-}
-
-.ai-privacy-note {
-  margin-top: 12px;
-  color: #71807b;
-  font-size: 12px;
-}
-
-/* Saat hasil AI tampil, foto dikecilkan supaya hasil langsung terlihat */
-.camera-modal-box--result .camera-preview-wrap {
-  min-height: 0;
-}
-
-.camera-modal-box--result .camera-preview-wrap canvas {
-  max-height: 190px;
 }
 
 /* =========================================
