@@ -50,12 +50,16 @@
       <nav class="nav-menu">
         <button class="nav-button active" data-page="home">Home</button>
 
-        <button class="nav-button" data-page="pengelola">Pengelola</button>
+        <!-- Menu akun Pengguna -->
+        <button class="nav-button only-user" data-page="pengelola">Pengelola</button>
+        <button class="nav-button only-user" data-page="produksi">Produksi</button>
 
-        <button class="nav-button" data-page="produksi">Produksi</button>
+        <!-- Menu akun Pengelola -->
+        <button class="nav-button only-pengelola" data-page="portal-pengelola">Penerimaan</button>
+        <button class="nav-button only-pengelola" data-page="pihak-produksi">Pihak Produksi</button>
+        <button class="nav-button only-pengelola" data-page="profil-pengelola">Profil Pengelola</button>
 
         <button class="nav-button" data-page="pembelian">Pembelian</button>
-
         <button class="nav-button" data-page="dashboard">Dashboard</button>
       </nav>
 
@@ -88,7 +92,16 @@
             sirkular yang berkelanjutan.
           </p>
 
-          <button class="location-button" onclick="showPage('pengelola')">
+          <button class="location-button only-pengelola" onclick="showPage('pihak-produksi')">
+            <div>
+              <strong>Lihat Pihak Produksi</strong>
+              <small>Temukan tempat produksi tujuan penyaluran sampah Anda</small>
+            </div>
+
+            <span>→</span>
+          </button>
+
+          <button class="location-button only-user" onclick="showPage('pengelola')">
             <div>
               <strong>Temukan Pengelola Sampah</strong>
               <small>
@@ -148,7 +161,7 @@
 
       <!-- MENU CEPAT -->
 
-      <section class="quick-menu">
+      <section class="quick-menu only-user">
         <button onclick="showPage('pengelola')">
           <div class="menu-image">
             <img src="pengelolaa.jpg" alt="Pengelola" />
@@ -192,7 +205,7 @@
 
       <!-- PENGELOLA TERDEKAT -->
 
-      <section class="home-section">
+      <section class="home-section only-user">
         <div class="section-title">
           <div>
             <h2>Pengelola Sampah Terdekat</h2>
@@ -232,7 +245,7 @@
 
       <!-- PILIH SAMPAH -->
 
-      <section class="home-section">
+      <section class="home-section only-user">
         <div class="section-title">
           <div>
             <h2>Pilih Jenis Sampah</h2>
@@ -389,9 +402,12 @@
 
             <div class="recycle-code-card">
               <span class="recycle-code-number">7</span>
-              <strong>Lainnya</strong>
+              <strong>PLA</strong>
               <small
-                >Campuran atau jenis plastik lain di luar kode 1&ndash;6</small
+                >Bioplastik dari jagung/tebu: gelas dan sedotan
+                &ldquo;biodegradable&rdquo;, kemasan makanan ramah lingkungan.
+                Umumnya butuh kompos industri, jangan dicampur dengan kode
+                1&ndash;6.</small
               >
             </div>
           </div>
@@ -1478,15 +1494,28 @@
                 <option value="3">3 - PVC</option>
                 <option value="4">4 - LDPE</option>
                 <option value="5">5 - PP</option>
-                <option value="6">6 - PS</option>
-                <option value="7">7 - Lainnya</option>
+                <option value="6">6 - PSS</option>
+                <option value="7">7 - PLA</option>
               </select>
             </label>
 
+            <button
+              type="button"
+              id="jemputKameraBtn"
+              class="secondary-button kamera-ai-trigger"
+              onclick="openKameraAI()"
+            >
+              📷 Kenali Kategori Plastik dengan Kamera AI
+            </button>
+
+            <p id="jemputKameraNote" class="kamera-ai-note" hidden></p>
+
             <p class="category-hint">
-              Kode Daur Ulang hanya berlaku untuk sampah Plastik, dan untuk saat
-              ini dipilih secara manual. Deteksi otomatis lewat AI akan tersedia
-              pada versi mendatang.
+              Kode Daur Ulang hanya berlaku untuk sampah Plastik. Pilih manual
+              lewat dropdown, atau arahkan sampah plastiknya ke Kamera AI
+              &mdash; kamera mengenali jenis plastik dari tampilan bendanya,
+              lalu menampilkan kodenya (1PET&ndash;7PLA) dan mengisi Kode Daur
+              Ulang. Jenis Sampah tetap Anda pilih sendiri.
             </p>
 
             <button type="submit" class="primary-button">
@@ -1946,6 +1975,129 @@
     </main>
 
     <!-- =====================================================
+         PIHAK PRODUKSI (khusus akun Pengelola)
+    ====================================================== -->
+
+    <main id="pihak-produksi" class="page">
+      <section class="page-hero" style="background-image: url(&quot;images/background1.png&quot;)">
+        <div>
+          <h1>Pihak Produksi</h1>
+          <p>Temukan tempat produksi yang dapat menerima sampah terpilah dari tempat Anda, lalu salurkan agar diolah menjadi produk.</p>
+        </div>
+      </section>
+
+      <section class="portal-wrap">
+        <div class="jemput-riwayat-box">
+          <h2>Tempat Produksi Tujuan Penyaluran</h2>
+          <p>Diurutkan dari yang terdekat dengan tempat pengelolaan Anda. Pilih jenis sampah untuk menyaring mitra yang menerimanya.</p>
+
+          <div class="portal-chips" id="produksiFilters"></div>
+          <div id="produksiMap"></div>
+          <div class="portal-batch-list" id="produksiList"></div>
+
+          <p class="category-hint">Catatan: data mitra Produksi pada prototipe ini adalah data contoh dan akan diganti dengan data mitra sebenarnya.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
+         PROFIL PENGELOLA (khusus akun Pengelola)
+    ====================================================== -->
+
+    <main id="profil-pengelola" class="page">
+      <section class="page-hero" style="background-image: url(&quot;images/background1.png&quot;)">
+        <div>
+          <h1>Profil Pengelola</h1>
+          <p>Identitas dan data operasional tempat pengelolaan Anda.</p>
+        </div>
+      </section>
+
+      <section class="portal-wrap">
+        <div id="profilLocked" style="display: none"></div>
+
+        <div id="profilContent">
+          <div id="profilFlash" class="portal-flash" role="status" hidden></div>
+
+          <div class="portal-place-card">
+            <div class="portal-place-head">
+              <div>
+                <h2 id="profilNama">-</h2>
+                <span id="profilKelas"></span>
+              </div>
+            </div>
+            <div class="portal-place-meta" id="profilSummary"></div>
+          </div>
+
+          <div class="jemput-riwayat-box">
+            <h2>Ubah Data Operasional</h2>
+            <p>Perubahan langsung tampil di daftar &amp; peta Pengelola.</p>
+            <form
+              id="portalProfilForm"
+              class="portal-form"
+              onsubmit="handlePortalProfilSubmit(event)"
+            >
+              <label>
+                Nama Tempat
+                <input type="text" id="portalProfilNama" disabled />
+              </label>
+
+              <p class="category-hint">
+                Nama tempat tidak bisa diubah karena dipakai sebagai penghubung
+                ke kode batch dan riwayat verifikasi.
+              </p>
+
+              <label>
+                Kapasitas Olah Harian (kg)
+                <input
+                  type="number"
+                  id="portalProfilKapasitas"
+                  min="1"
+                  step="any"
+                  required
+                />
+              </label>
+
+              <p
+                id="portalProfilKelasHint"
+                class="category-hint"
+                style="display: none"
+              >
+                Kelas <strong>Mandiri</strong>: kapasitas sebaiknya dinaikkan
+                bertahap sesuai riwayat verifikasi yang baik.
+              </p>
+
+              <label>
+                Jam Operasional
+                <input
+                  type="text"
+                  id="portalProfilJam"
+                  placeholder="Contoh: 08.00 - 16.00 WIB"
+                />
+              </label>
+
+              <fieldset class="reg-category-fieldset">
+                <legend>Jenis Sampah yang Diterima</legend>
+
+                <div class="reg-checkbox-grid" id="portalProfilKategori"></div>
+              </fieldset>
+
+              <p
+                id="portalProfilStatus"
+                class="portal-msg portal-msg--error"
+                role="alert"
+                hidden
+              ></p>
+
+              <button type="submit" class="primary-button">
+                Simpan Perubahan
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =====================================================
          PENGATURAN
     ====================================================== -->
 
@@ -2387,15 +2539,6 @@
           >
             Riwayat &amp; Traceability
           </button>
-
-          <button
-            type="button"
-            class="portal-tab"
-            data-tab="profil"
-            onclick="switchPortalTab('profil')"
-          >
-            Profil Tempat
-          </button>
         </div>
 
         <!-- 2. PENGAJUAN MASUK (bisa difilter berdasarkan status) -->
@@ -2440,81 +2583,6 @@
             </div>
 
             <div class="portal-batch-list" id="portalRiwayatList"></div>
-          </div>
-        </div>
-
-        <!-- 6. PROFIL TEMPAT -->
-        <div class="portal-panel" id="portalPanelProfil" style="display: none">
-          <div class="jemput-riwayat-box">
-            <h2>Profil Tempat</h2>
-
-            <p>
-              Perbarui kapasitas harian, jam operasional, dan jenis sampah yang
-              Anda terima. Perubahan langsung tampil di daftar &amp; peta
-              Pengelola.
-            </p>
-
-            <form
-              id="portalProfilForm"
-              class="portal-form"
-              onsubmit="handlePortalProfilSubmit(event)"
-            >
-              <label>
-                Nama Tempat
-                <input type="text" id="portalProfilNama" disabled />
-              </label>
-
-              <p class="category-hint">
-                Nama tempat tidak bisa diubah karena dipakai sebagai penghubung
-                ke kode batch dan riwayat verifikasi.
-              </p>
-
-              <label>
-                Kapasitas Olah Harian (kg)
-                <input
-                  type="number"
-                  id="portalProfilKapasitas"
-                  min="1"
-                  step="any"
-                  required
-                />
-              </label>
-
-              <p
-                id="portalProfilKelasHint"
-                class="category-hint"
-                style="display: none"
-              >
-                Kelas <strong>Mandiri</strong>: kapasitas sebaiknya dinaikkan
-                bertahap sesuai riwayat verifikasi yang baik.
-              </p>
-
-              <label>
-                Jam Operasional
-                <input
-                  type="text"
-                  id="portalProfilJam"
-                  placeholder="Contoh: 08.00 - 16.00 WIB"
-                />
-              </label>
-
-              <fieldset class="reg-category-fieldset">
-                <legend>Jenis Sampah yang Diterima</legend>
-
-                <div class="reg-checkbox-grid" id="portalProfilKategori"></div>
-              </fieldset>
-
-              <p
-                id="portalProfilStatus"
-                class="portal-msg portal-msg--error"
-                role="alert"
-                hidden
-              ></p>
-
-              <button type="submit" class="primary-button">
-                Simpan Perubahan
-              </button>
-            </form>
           </div>
         </div>
       </section>
@@ -2592,6 +2660,82 @@
         </div>
       </div>
     </main>
+
+    <!-- =====================================================
+         MODAL: KAMERA AI (deteksi langsung / real-time)
+         Logika ada di ai-kamera.js. Model Teachable Machine dimuat dari
+         folder model/ (lihat CONFIG.MODEL_URL di ai-kamera.js).
+    ====================================================== -->
+    <div
+      id="kameraAIModal"
+      class="modal-overlay"
+      onclick="if (event.target === this) closeKameraAI();"
+    >
+      <div class="modal-box kamera-ai-box">
+        <div class="modal-header">
+          <h2>Kamera AI Kategori Plastik</h2>
+
+          <button type="button" class="modal-close" onclick="closeKameraAI()">
+            ×
+          </button>
+        </div>
+
+        <p class="modal-subtitle">
+          Arahkan sampah plastik (botol, kantong, gelas, dll.) ke kamera. AI
+          mengenali jenisnya dari tampilan benda, lalu menampilkan kode daur
+          ulangnya. Deteksi berjalan langsung, tanpa perlu memotret.
+        </p>
+
+        <div class="kamera-ai-stage">
+          <video id="kameraAIVideo" autoplay playsinline muted></video>
+          <div class="kamera-ai-overlay" id="kameraAIOverlay">
+            Menyiapkan kamera...
+          </div>
+        </div>
+
+        <div class="kamera-ai-verdict" id="kameraAIVerdict" data-state="idle">
+          <span class="kamera-ai-verdict-code" id="kameraAIVerdictCode">?</span>
+          <div>
+            <strong id="kameraAIVerdictLabel">Menunggu kamera...</strong>
+            <small id="kameraAIVerdictConf"></small>
+          </div>
+        </div>
+
+        <div class="kamera-ai-bars" id="kameraAIBars"></div>
+
+        <p id="kameraAIError" class="portal-msg portal-msg--error" hidden></p>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="secondary-button"
+            id="kameraAISwitchBtn"
+            onclick="switchKameraAI()"
+          >
+            🔄 Ganti Kamera
+          </button>
+
+          <button
+            type="button"
+            class="secondary-button"
+            id="kameraAIRetryBtn"
+            onclick="ulangiKameraAI()"
+          >
+            🔁 Ulangi Deteksi
+          </button>
+
+          <button
+            type="button"
+            class="primary-button"
+            id="kameraAIUseBtn"
+            onclick="useKameraAIResult()"
+            disabled
+          >
+            Gunakan Hasil Ini
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- MODAL: RUTE PENJEMPUTAN (dipakai pengguna & pengelola) -->
     <div id="routeModal" class="modal-overlay">
@@ -2813,7 +2957,7 @@
             <div>
               <b>1</b>
               <strong>Kenali &amp; Pilah</strong>
-              <span>Pilih jenis sampah atau verifikasi dengan kamera AI.</span>
+              <span>Pilih jenis sampah; untuk plastik, kenali kategorinya dengan kamera AI.</span>
             </div>
 
             <div>
@@ -2904,5 +3048,8 @@
     <script src="ai-slot.js"></script>
 
     <script src="script.js"></script>
+
+    <!-- Kamera AI: deteksi langsung (Teachable Machine / TensorFlow.js) -->
+    <script src="ai-kamera.js"></script>
   </body>
 </html>
