@@ -33,6 +33,14 @@ let googleWasteBanksLoading = false;
 ========================================= */
 
 function showPage(pageId) {
+  // Halaman khusus akun Pengelola
+  if (
+    ["pihak-produksi", "profil-pengelola"].indexOf(pageId) !== -1 &&
+    !(getCurrentUser() && getCurrentUser().role === "pengelola")
+  ) {
+    pageId = "login";
+  }
+
   // Ambil semua halaman
   const pages = document.querySelectorAll(".page");
 
@@ -84,6 +92,10 @@ function showPage(pageId) {
     renderPortalPengelola();
   } else if (pageId === "produksi") {
     goToProductionSlide(0);
+  } else if (pageId === "pihak-produksi") {
+    renderPihakProduksi();
+  } else if (pageId === "profil-pengelola") {
+    renderProfilPengelola();
   }
 
   // Sinkronkan tampilan akun (navbar, tombol tambah produk, halaman
@@ -1168,7 +1180,9 @@ function buildManagerCard(data) {
   article.dataset.lng = data.lng;
   if (isGoogle) article.dataset.source = "google";
 
-  const badge = isGoogle
+  const badge = data.seed
+    ? '<span class="new-badge new-badge--google">Terdaftar di ReLoop</span>'
+    : isGoogle
     ? '<span class="new-badge new-badge--google">Data Google Maps</span>'
     : '<span class="new-badge">Baru Didaftarkan</span>';
 
@@ -1550,6 +1564,8 @@ function loadStoredManagersOnStart() {
   if (!list) return;
 
   stored.forEach(function (data) {
+    // Tempat bawaan (akun seed) sudah punya kartu statis di HTML
+    if (data.seed && managerCardExists(data.namaTempat)) return;
     const card = buildManagerCard(data);
     list.appendChild(card);
   });
@@ -2371,19 +2387,18 @@ function closeRouteModal() {
   if (modal) modal.classList.remove("open");
 }
 
-// Kode daur ulang plastik (Resin Identification Code) 1-7 yang untuk saat
-// ini WAJIB dipilih pengguna secara MANUAL lewat dropdown "Kode Daur
-// Ulang". Ke depan, nilai ini bisa diisi otomatis lewat
-// detectKodeDaurUlang() di ai-slot.js begitu AI-nya sudah siap — lihat
-// komentar di file tersebut untuk bentuk output yang diharapkan.
+// Kode daur ulang plastik (Resin Identification Code) 1-7. Kode 7 adalah PLA
+// (bioplastik). Nilainya bisa dipilih
+// manual lewat dropdown "Kode Daur Ulang", atau terisi otomatis dari Kamera
+// AI (lihat ai-kamera.js, tombol "Deteksi dengan Kamera AI").
 const KODE_DAUR_ULANG_LABELS = {
   1: "1 - PET",
   2: "2 - HDPE",
   3: "3 - PVC",
   4: "4 - LDPE",
   5: "5 - PP",
-  6: "6 - PS",
-  7: "7 - Lainnya",
+  6: "6 - PSS",
+  7: "7 - PLA",
 };
 
 // Kode Daur Ulang (1-7) hanya relevan untuk sub-jenis sampah Plastik,
@@ -2400,6 +2415,13 @@ function updateJemputKodeDaurVisibility() {
 
   kodeWrap.style.display = isPlastik ? "" : "none";
   kodeSelect.required = isPlastik;
+
+  // Tombol Kamera AI hanya mengenali kategori plastik (kode 1-7), jadi ikut
+  // tampil/tersembunyi bersama field Kode Daur Ulang.
+  const kameraBtn = document.getElementById("jemputKameraBtn");
+  const kameraNote = document.getElementById("jemputKameraNote");
+  if (kameraBtn) kameraBtn.style.display = isPlastik ? "" : "none";
+  if (kameraNote && !isPlastik) kameraNote.hidden = true;
 
   if (!isPlastik) {
     kodeSelect.value = "";
@@ -3016,6 +3038,7 @@ function updateAuthUI() {
   const productBtn = document.getElementById("openProductBtn");
   const productNote = document.getElementById("productLockedNote");
   const isPengelola = !!user && user.role === "pengelola";
+  document.body.classList.toggle("role-pengelola", isPengelola);
 
   if (productBtn) {
     productBtn.style.display = isPengelola ? "block" : "none";
@@ -4056,6 +4079,8 @@ function handlePortalProfilSubmit(event) {
   refreshPortalData();
 
   showPortalFlash("Profil tempat berhasil diperbarui.", "ok");
+  renderProfilPengelola();
+  showProfilFlash("Profil tempat berhasil diperbarui.");
 }
 
 // Ganti kartu satu tempat di halaman Pengelola (pencocokan nama persis),
@@ -4210,3 +4235,257 @@ document.addEventListener("keydown", function (event) {
     closeProductDetail();
   }
 });
+
+
+/* =========================================
+   AKUN BAWAAN PENGELOLA (SEED)
+   -----------------------------------------
+   Satu akun untuk tiap tempat pengelolaan di halaman Pengelola.
+   Nama tempat harus SAMA PERSIS dengan judul kartu di index.html
+   (dipakai sebagai penghubung ke kode batch).
+   Kapasitas harian di bawah adalah angka contoh: ubah lewat
+   menu Profil Pengelola.
+   PERINGATAN: kata sandi di file ini terlihat oleh siapa pun yang
+   membuka kode. Hanya untuk prototipe; hapus sebelum dipublikasikan.
+========================================= */
+
+const PENGELOLA_SEED = [
+  { nama: "Bank Sampah Malang", email: "banksampahmalang@reloop.id", password: "BSM@Reloop26",
+    categories: ["Plastik"], lat: -7.995456, lng: 112.619461, kapasitas: 300,
+    alamat: "Jl. S. Supriadi No.38 A, Sukun, Kota Malang, Jawa Timur 65147",
+    jamOperasional: "Senin-Kamis & Sabtu 08.00-16.00, Jumat 08.00-11.00 & 13.00-16.00 WIB",
+    telepon: "+62 341 341618", foto: "bank sampah malang.webp" },
+  { nama: "TPS3R BASAMA Bandungrejosari", email: "tps3rbasama@reloop.id", password: "BASAMA@Reloop26",
+    categories: ["Organik", "Plastik"], lat: -7.9986344, lng: 112.6053124, kapasitas: 500,
+    alamat: "Gg. Dr. Soetomo, Bandungrejosari, Sukun, Kota Malang, Jawa Timur 65148",
+    jamOperasional: "Senin-Sabtu 07.00-15.00 WIB", telepon: "", foto: "tps3r basama.webp" },
+  { nama: "TPS3R Kelurahan Buring", email: "tps3rburing@reloop.id", password: "BURING@Reloop26",
+    categories: ["Organik", "Plastik"], lat: -8.0161654, lng: 112.6448084, kapasitas: 500,
+    alamat: "Buring, Kedungkandang, Kota Malang, Jawa Timur 65135",
+    jamOperasional: "24 Jam", telepon: "", foto: "tps3r buring.webp" },
+  { nama: "TPST 3R Mulyoagung Bersatu", email: "tpst3rmulyoagung@reloop.id", password: "MULYO@Reloop26",
+    categories: ["Organik", "Plastik"], lat: -7.9213785, lng: 112.5834081, kapasitas: 800,
+    alamat: "Jl. TPST No.01, Jetak Lor, Mulyoagung, Kec. Dau, Kabupaten Malang, Jawa Timur 65151",
+    jamOperasional: "Senin-Sabtu 06.30-17.00 WIB", telepon: "+62 813-3555-5131", foto: "tpst 3r mulyoangung.jpg" },
+  { nama: "TPA Supit Urang", email: "tpasupiturang@reloop.id", password: "SUPIT@Reloop26",
+    categories: ["Organik"], lat: -7.9827377, lng: 112.5779182, kapasitas: 2000,
+    alamat: "Pandan Selatan, Pandanlandung, Kec. Wagir, Kabupaten Malang, Jawa Timur 65158",
+    jamOperasional: "24 Jam", telepon: "", foto: "tpa.webp" },
+  { nama: 'Unit Bank Sampah Malang "Melati"', email: "banksampahmelati@reloop.id", password: "MELATI@Reloop26",
+    categories: ["Plastik"], lat: -7.9864553, lng: 112.6437425, kapasitas: 200,
+    alamat: "Jl. Krisno No.36 02, Polehan, Kec. Blimbing, Kota Malang, Jawa Timur 65126",
+    jamOperasional: "Setiap Hari 07.00-17.00 WIB", telepon: "+62 341 7729786", foto: "bank sampah melati.webp" },
+  { nama: "Smart Waste Center", email: "smartwastecenter@reloop.id", password: "SMART@Reloop26",
+    categories: ["Plastik"], lat: -8.0097524, lng: 112.6482826, kapasitas: 400,
+    alamat: "Jl. KH. Malik Dalam No.II, Buring, Kec. Kedungkandang, Kota Malang, Jawa Timur 65135",
+    jamOperasional: "Senin-Jumat 09.00-16.00 WIB", telepon: "+62 811-3566-665", foto: "smart.jpg" },
+];
+
+// Tambahkan akun & tempat bawaan bila belum ada (aman dijalankan berulang).
+function seedPengelolaAccounts() {
+  const users = getStoredUsers();
+  const places = getStoredManagers();
+
+  PENGELOLA_SEED.forEach(function (p) {
+    const u = users.find(function (x) { return x.email === p.email; });
+    if (u) {
+      u.role = "pengelola";
+    } else {
+      users.push({ nama: p.nama, email: p.email, password: p.password, role: "pengelola" });
+    }
+
+    const exists = places.some(function (m) { return m.ownerEmail === p.email; });
+    if (!exists) {
+      places.push({
+        namaTempat: p.nama, ketua: "", jumlahKaryawan: "", telepon: p.telepon,
+        alamat: p.alamat, jamOperasional: p.jamOperasional, categories: p.categories,
+        lat: p.lat, lng: p.lng, isApprox: false, kelas: "institusional",
+        kapasitas: p.kapasitas, ownerEmail: p.email, foto: p.foto, seed: true,
+      });
+    }
+  });
+
+  saveStoredUsers(users);
+  saveStoredManagers(places);
+}
+
+function managerCardExists(name) {
+  return Array.from(document.querySelectorAll("#managerList .manager-result h3")).some(function (h3) {
+    const c = h3.cloneNode(true);
+    c.querySelectorAll(".new-badge").forEach(function (b) { b.remove(); });
+    return c.textContent.trim() === name;
+  });
+}
+
+seedPengelolaAccounts();
+
+/* =========================================
+   PROFIL PENGELOLA (halaman khusus akun Pengelola)
+========================================= */
+
+let profilFlashTimer = null;
+
+function showProfilFlash(message) {
+  const el = document.getElementById("profilFlash");
+  if (!el) return;
+  el.textContent = message;
+  el.className = "portal-flash portal-flash--ok";
+  el.hidden = false;
+  clearTimeout(profilFlashTimer);
+  profilFlashTimer = setTimeout(function () { el.hidden = true; }, 6000);
+}
+
+function renderProfilPengelola() {
+  const locked = document.getElementById("profilLocked");
+  const content = document.getElementById("profilContent");
+  if (!locked || !content) return;
+
+  const ctx = resolvePortalState();
+
+  if (ctx.state !== "ok") {
+    locked.innerHTML =
+      '<div class="locked-feature-note portal-locked">Halaman ini khusus <strong>akun Pengelola</strong> yang sudah memiliki tempat pengelolaan.</div>';
+    locked.style.display = "block";
+    content.style.display = "none";
+    return;
+  }
+
+  locked.style.display = "none";
+  content.style.display = "block";
+
+  const p = ctx.place;
+  portalSetText("profilNama", p.namaTempat);
+
+  document.getElementById("profilKelas").innerHTML =
+    p.kelas === "institusional"
+      ? '<span class="kelas-badge kelas-badge--institusional">🏛 Institusional</span>'
+      : '<span class="kelas-badge kelas-badge--mandiri">👤 Mandiri</span>';
+
+  const rows = [
+    ["📍", p.alamat || "-"],
+    ["🕒", p.jamOperasional || "Jam operasional belum diisi"],
+    ["📞", p.telepon || "-"],
+    ["⚖️", "Kapasitas olah harian: " + portalFormatKg(p.kapasitas)],
+  ];
+  if (p.ketua) rows.push(["👤", "Ketua: " + p.ketua]);
+  if (p.jumlahKaryawan) rows.push(["👥", p.jumlahKaryawan + " karyawan"]);
+
+  document.getElementById("profilSummary").innerHTML =
+    rows.map(function (r) { return "<p>" + r[0] + " " + portalEscape(r[1]) + "</p>"; }).join("") +
+    '<div class="tags">' +
+    (p.categories || []).map(function (c) { return "<span>" + portalEscape(c) + "</span>"; }).join("") +
+    "</div>";
+
+  fillPortalProfilForm(p);
+}
+
+/* =========================================
+   PIHAK PRODUKSI (halaman khusus akun Pengelola)
+   Data contoh: ganti dengan mitra Produksi sebenarnya.
+========================================= */
+
+const PIHAK_PRODUKSI = [
+  { nama: "Pelet Plastik Nusantara", jenis: ["Plastik"], kode: ["1 PET", "2 HDPE", "5 PP"],
+    produk: "Bijih/pelet plastik daur ulang", alamat: "Kawasan industri Singosari, Kab. Malang",
+    lat: -7.8967, lng: 112.665, kapasitas: 3000, syarat: "Plastik bersih, sudah dipilah per kode daur ulang" },
+  { nama: "Paving & Ecobrick Sukun", jenis: ["Plastik"], kode: ["4 LDPE", "5 PP"],
+    produk: "Paving block dan ecobrick dari plastik lentur", alamat: "Sukun, Kota Malang",
+    lat: -8.0, lng: 112.61, kapasitas: 800, syarat: "Plastik kering, boleh berlabel" },
+  { nama: "Serat Daur Pakis", jenis: ["Plastik"], kode: ["1 PET"],
+    produk: "Serat polyester dari botol PET", alamat: "Pakis, Kab. Malang",
+    lat: -7.97, lng: 112.71, kapasitas: 2000, syarat: "Botol tanpa tutup & label, sudah dibilas" },
+  { nama: "Kompos Sentra Kepanjen", jenis: ["Organik"], kode: [],
+    produk: "Kompos dan pupuk organik", alamat: "Kepanjen, Kab. Malang",
+    lat: -8.13, lng: 112.57, kapasitas: 5000, syarat: "Bebas plastik, bukan daging/tulang besar" },
+  { nama: "Biogas & Maggot Lawang", jenis: ["Organik"], kode: [],
+    produk: "Biogas dan pakan maggot BSF", alamat: "Lawang, Kab. Malang",
+    lat: -7.835, lng: 112.696, kapasitas: 2500, syarat: "Sisa makanan/sayur, dipisah dari sampah lain" },
+  { nama: "Kompos Industri PLA Blimbing", jenis: ["Plastik"], kode: ["7 PLA"],
+    produk: "Pengomposan industri bioplastik PLA", alamat: "Blimbing, Kota Malang",
+    lat: -7.94, lng: 112.655, kapasitas: 600, syarat: "Hanya kode 7 PLA, jangan dicampur kode 1-6" },
+];
+
+let produksiMapObj = null;
+let produksiLayer = null;
+let produksiFilter = "Semua";
+
+function renderPihakProduksi() {
+  const ctx = resolvePortalState();
+  const origin = ctx.state === "ok" ? { lat: ctx.place.lat, lng: ctx.place.lng } : MALANG_CENTER;
+  const myCats = ctx.state === "ok" ? ctx.place.categories || [] : [];
+
+  const list = PIHAK_PRODUKSI.map(function (p) {
+    return Object.assign({}, p, { jarak: haversineDistanceKm(origin.lat, origin.lng, p.lat, p.lng) });
+  }).sort(function (a, b) { return a.jarak - b.jarak; });
+
+  const shown = list.filter(function (p) {
+    return produksiFilter === "Semua" || p.jenis.indexOf(produksiFilter) !== -1;
+  });
+
+  document.getElementById("produksiFilters").innerHTML = ["Semua", "Plastik", "Organik"]
+    .map(function (f) {
+      return '<button type="button" class="portal-chip' + (f === produksiFilter ? " active" : "") +
+        '" data-jenis="' + f + '">' + f + "</button>";
+    }).join("");
+
+  document.getElementById("produksiList").innerHTML = shown.length
+    ? shown.map(function (p) {
+        const cocok = p.jenis.some(function (j) { return myCats.indexOf(j) !== -1; });
+        return (
+          '<div class="batch-card"><div class="batch-card-top"><strong>' + portalEscape(p.nama) + "</strong>" +
+          (cocok ? '<span class="produksi-match">Cocok dengan tempat Anda</span>' : "") + "</div>" +
+          "<p>📍 " + portalEscape(p.alamat) + " · " + p.jarak.toFixed(1).replace(".", ",") + " km</p>" +
+          "<p>🏭 " + portalEscape(p.produk) + "</p>" +
+          "<p>⚖️ Menerima hingga " + portalFormatKg(p.kapasitas) + " per hari</p>" +
+          "<p>📋 " + portalEscape(p.syarat) + "</p>" +
+          '<div class="tags">' +
+          p.jenis.map(function (j) { return "<span>" + j + "</span>"; }).join("") +
+          p.kode.map(function (k) { return "<span>" + k + "</span>"; }).join("") + "</div>" +
+          '<div class="produksi-actions">' +
+          '<button type="button" class="primary-button" data-rute="' + p.lat + "," + p.lng + '">Lihat Rute</button>' +
+          '<button type="button" class="secondary-button" data-fokus="' + p.lat + "," + p.lng + '">Lihat di Peta</button>' +
+          "</div></div>"
+        );
+      }).join("")
+    : '<p class="empty-note">Belum ada tempat produksi untuk jenis ini.</p>';
+
+  if (!produksiMapObj) {
+    produksiMapObj = L.map("produksiMap").setView([origin.lat, origin.lng], 10);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap",
+    }).addTo(produksiMapObj);
+    produksiLayer = L.layerGroup().addTo(produksiMapObj);
+  }
+
+  produksiLayer.clearLayers();
+  L.circleMarker([origin.lat, origin.lng], { radius: 9, color: "#1e6b34", fillOpacity: 0.9 })
+    .addTo(produksiLayer).bindPopup("Tempat Anda");
+  shown.forEach(function (p) {
+    L.marker([p.lat, p.lng]).addTo(produksiLayer).bindPopup("<strong>" + portalEscape(p.nama) + "</strong><br>" + portalEscape(p.produk));
+  });
+
+  setTimeout(function () { produksiMapObj.invalidateSize(); }, 80);
+}
+
+const produksiPageEl = document.getElementById("pihak-produksi");
+if (produksiPageEl) {
+  produksiPageEl.addEventListener("click", function (event) {
+    const chip = event.target.closest("[data-jenis]");
+    if (chip) {
+      produksiFilter = chip.dataset.jenis;
+      renderPihakProduksi();
+      return;
+    }
+    const rute = event.target.closest("[data-rute]");
+    if (rute) {
+      window.open("https://www.google.com/maps/dir/?api=1&destination=" + rute.dataset.rute, "_blank");
+      return;
+    }
+    const fokus = event.target.closest("[data-fokus]");
+    if (fokus && produksiMapObj) {
+      const c = fokus.dataset.fokus.split(",").map(Number);
+      produksiMapObj.setView(c, 13);
+      document.getElementById("produksiMap").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+}
